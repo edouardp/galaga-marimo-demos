@@ -18,13 +18,6 @@ def _():
 
 
 @app.cell
-def _(Algebra):
-    alg = Algebra((1,1))
-    e1,e2 = alg.basis_vectors(lazy=True)
-    return alg, e1, e2
-
-
-@app.cell
 def _(plt):
     def draw_rotation(v, vp):
         v_xy = v.vector_part[:2].tolist()
@@ -43,6 +36,23 @@ def _(plt):
 
 @app.cell(hide_code=True)
 def _(mo):
+    mo.md(r"""
+    We start with the 2D Euclidean geometric algebra $\mathrm{Cl}(2,0)$.
+
+    Its basis vectors satisfy $e_1^2 = e_2^2 = 1$, so lengths and angles behave like the usual plane, and the bivector $e_1 e_2$ generates ordinary rotations.
+    """)
+    return
+
+
+@app.cell
+def _(Algebra):
+    alg = Algebra((1,1))
+    e1,e2 = alg.basis_vectors(lazy=True)
+    return alg, e1, e2
+
+
+@app.cell(hide_code=True)
+def _(mo):
     mo.md("""
     ## Rotations with Rotors in Geometric Algebra
 
@@ -50,7 +60,7 @@ def _(mo):
 
     Given a bivector $B = e_1 \wedge e_2$ (representing the plane of rotation) and an angle $\theta$, the rotor is:
 
-    $$R = e^{-B\theta/2}$$
+    $$R = e^{-B \theta/2}$$
 
     To rotate a vector $\mathbf{v}$, we apply the **sandwich product**:
 

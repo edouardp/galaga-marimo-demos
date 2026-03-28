@@ -52,6 +52,16 @@ def _(np, plt):
     return (draw_minkowski,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    We build the spacetime algebra $\mathrm{Cl}(1,3)$ with signature $(+,-,-,-)$.
+
+    That gives one timelike basis vector, $\gamma_0^2 = +1$, and three spacelike basis vectors, $\gamma_1^2 = \gamma_2^2 = \gamma_3^2 = -1$. Mixed products like $\gamma_0\gamma_1$ form bivectors, and in STA those timelike planes generate Lorentz boosts rather than ordinary Euclidean rotations.
+    """)
+    return
+
+
 @app.cell
 def _(Algebra):
     sta = Algebra((1, -1, -1, -1), names="gamma")
@@ -60,24 +70,24 @@ def _(Algebra):
 
 
 @app.cell(hide_code=True)
-def _(gm):
-    gm.md("""
+def _(mo):
+    mo.md(r"""
     ## Lorentz Boosts in Spacetime Algebra
 
-    In **Spacetime Algebra** (STA), the Clifford algebra $\\mathrm{Cl}(1,3)$, we have one timelike basis vector ($\\gamma_0^2 = +1$) and three spacelike ($\\gamma_i^2 = -1$).
+    In **Spacetime Algebra** (STA), the Clifford algebra $\mathrm{Cl}(1,3)$, we have one timelike basis vector ($\gamma_0^2 = +1$) and three spacelike ($\gamma_i^2 = -1$).
 
-    **Timelike bivectors** like $\\gamma_0\\gamma_1$ square to $+1$ and generate **Lorentz boosts** — hyperbolic rotations that mix space and time.
+    **Timelike bivectors** like $\gamma_0\gamma_1$ square to $+1$ and generate **Lorentz boosts** — hyperbolic rotations that mix space and time.
 
-    The boost rotor for rapidity $\\varphi$ in the $\\gamma_0\\gamma_1$ plane is:
+    The boost rotor for rapidity $\varphi$ in the $\gamma_0\gamma_1$ plane is:
 
-    $$R = \\cosh(\\varphi/2) + \\sinh(\\varphi/2)\\,\\gamma_0\\gamma_1$$
+    $$R = \cosh(\varphi/2) + \sinh(\varphi/2)\,\gamma_0\gamma_1$$
 
-    We transform vectors with the sandwich product $v' = Rv\\tilde{R}$, just like spatial rotations.
+    We transform vectors with the sandwich product $v' = Rv\tilde{R}$, just like spatial rotations.
 
     Key relations:
-    - $\\beta = v/c = \\tanh\\varphi$ (velocity as fraction of $c$)
-    - $\\gamma = \\cosh\\varphi$ (Lorentz factor)
-    - Rapidities add linearly: $\\varphi_{\\text{total}} = \\varphi_1 + \\varphi_2$
+    - $\beta = v/c = \tanh \varphi$ (velocity as fraction of $c$)
+    - $\gamma = \cosh \varphi$ (Lorentz factor)
+    - Rapidities add linearly: $\varphi_{\text{total}} = \varphi_1 + \varphi_2$
 
     Use the slider below to boost the basis vectors and watch the Minkowski diagram respond.
     """)
