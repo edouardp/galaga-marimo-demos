@@ -1,0 +1,12 @@
+[project]
+name = "galaga-playing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "galaga>=0.2.0",
+    "galaga-marimo>=0.2.0",
+    "marimo>=0.21.1",
+    "matplotlib>=3.10.8",
+]
