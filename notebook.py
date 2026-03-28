@@ -53,7 +53,7 @@ def _(Algebra):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""
+    mo.md(r"""
     ## Rotations with Rotors in Geometric Algebra
 
     In geometric algebra, we rotate vectors using **rotors** — objects built from bivectors via the exponential map.

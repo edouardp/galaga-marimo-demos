@@ -54,7 +54,7 @@ def _(np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("""
+    mo.md(r"""
     We build the spacetime algebra $\mathrm{Cl}(1,3)$ with signature $(+,-,-,-)$.
 
     That gives one timelike basis vector, $\gamma_0^2 = +1$, and three spacelike basis vectors, $\gamma_1^2 = \gamma_2^2 = \gamma_3^2 = -1$. Mixed products like $\gamma_0\gamma_1$ form bivectors, and in STA those timelike planes generate Lorentz boosts rather than ordinary Euclidean rotations.
