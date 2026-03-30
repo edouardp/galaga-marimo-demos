@@ -1,0 +1,127 @@
+import marimo
+
+__generated_with = "0.21.1"
+app = marimo.App(width="medium")
+
+
+@app.cell
+def _():
+    from galaga import Algebra
+    import galaga_marimo as gm
+    import numpy as np
+    import marimo as mo
+    import matplotlib.pyplot as plt
+
+    return Algebra, gm, mo, np, plt
+
+
+@app.cell
+def _(plt):
+    def draw_reflections(n1, n2, x, x2):
+        a = n1.vector_part[:2]
+        b = n2.vector_part[:2]
+        xv = x.vector_part[:2]
+        x2v = x2.vector_part[:2]
+
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.plot([-2.5 * a[0], 2.5 * a[0]], [-2.5 * a[1], 2.5 * a[1]], color="steelblue", alpha=0.45)
+        ax.plot([-2.5 * b[0], 2.5 * b[0]], [-2.5 * b[1], 2.5 * b[1]], color="darkorange", alpha=0.45)
+        ax.annotate("", xy=xv, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="black", lw=2))
+        ax.annotate("", xy=x2v, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
+        ax.plot([], [], color="steelblue", label="first mirror")
+        ax.plot([], [], color="darkorange", label="second mirror")
+        ax.plot([], [], color="black", label="input vector")
+        ax.plot([], [], color="crimson", label="after two reflections")
+        ax.set_xlim(-2, 2)
+        ax.set_ylim(-2, 2)
+        ax.set_aspect("equal")
+        ax.grid(True, alpha=0.25)
+        ax.set_xlabel("e1")
+        ax.set_ylabel("e2")
+        ax.set_title("Two reflections compose to a rotation")
+        ax.legend(loc="upper left")
+        plt.close(fig)
+        return fig
+
+    return (draw_reflections,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    We start with the 2D Euclidean geometric algebra $\mathrm{Cl}(2,0)$.
+
+    Its basis vectors satisfy $e_1^2 = e_2^2 = 1$, so reflections preserve lengths, and composing two reflections produces a rotation in the plane.
+    """)
+    return
+
+
+@app.cell
+def _(Algebra):
+    alg = Algebra((1, 1))
+    e1, e2 = alg.basis_vectors(lazy=True)
+    return alg, e1, e2
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Rotors from Reflections
+
+    A rotor can be built from two mirror directions. If $n_1$ and $n_2$ are unit vectors normal to the two reflection lines, then reflecting a vector $x$ twice gives
+
+    $$x' = (-n_2)(-n_1)x n_1 n_2 = (n_2 n_1)\, x \,\widetilde{(n_2 n_1)}.$$
+
+    So the product $R = n_2 n_1$ acts like a rotor. The angle between the mirrors controls the rotation angle of the final vector.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    alpha = mo.ui.slider(0, 180, step=1, value=20, label="First mirror angle", show_value=True)
+    beta = mo.ui.slider(0, 180, step=1, value=65, label="Second mirror angle", show_value=True)
+    vector_angle = mo.ui.slider(0, 180, step=1, value=15, label="Input vector angle", show_value=True)
+    return alpha, beta, vector_angle
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(alg, alpha, beta, draw_reflections, e1, e2, gm, mo, np, vector_angle):
+    a = np.radians(alpha.value)
+    b = np.radians(beta.value)
+    v = np.radians(vector_angle.value)
+
+    n1 = (np.cos(a) * e1 + np.sin(a) * e2).name("n_1")
+    n2 = (np.cos(b) * e1 + np.sin(b) * e2).name("n_2")
+    x = (np.cos(v) * e1 + np.sin(v) * e2).name("x")
+    x1 = (-n1 * x * n1).name("x_1")
+    x2 = (-n2 * x1 * n2).name("x_2")
+    R = (n2 * n1).name("R")
+    rotation_angle = alg.scalar(np.radians(2 * (beta.value - alpha.value))).name(latex=r"\theta")
+
+    _md = t"""
+    {n1.display()} <br/>
+    {n2.display()} <br/>
+    {x.display()} <br/>
+    {x1.display()} <br/>
+    {x2.display()} <br/>
+    {R.display()} <br/>
+    {rotation_angle.display()} $\\quad$ with $\\theta = 2(\\beta - \\alpha) = {2 * (beta.value - alpha.value)}^\\circ$
+    """
+
+    mo.vstack([alpha, beta, vector_angle,gm.md(_md), draw_reflections(n1, n2, x, x2)])
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+if __name__ == "__main__":
+    app.run()

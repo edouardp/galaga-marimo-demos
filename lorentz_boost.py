@@ -6,7 +6,7 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
-    from galaga import Algebra, exp, sandwich, scalar, grade
+    from galaga import Algebra, exp, sandwich, grade
     import galaga_marimo as gm
     import numpy as np
     import marimo as mo
