@@ -139,13 +139,21 @@ This is now a repo convention.
 
 ### 4. Algebra construction cell
 
-Define the algebra in its own cell, then return the basis elements needed
-downstream.
+Define the algebra in its own cell, always return the algebra object itself,
+and then return the basis elements needed downstream.
 
 Examples:
 
 - `alg = Algebra((1, 1))`
 - `sta = Algebra((1, -1, -1, -1), names="gamma")`
+
+Preferred pattern:
+
+```python
+alg = Algebra((1, 1))
+e1, e2 = alg.basis_vectors(lazy=True)
+return alg, e1, e2
+```
 
 ### 5. Explanatory markdown cells
 
@@ -248,7 +256,7 @@ repo environment.
 
 Examples:
 
-- `UV_CACHE_DIR=/tmp/uv-cache uv run python -m py_compile notebook.py`
+- `UV_CACHE_DIR=/tmp/uv-cache uv run python -m py_compile notebooks/rotors/notebook.py`
 - `UV_CACHE_DIR=/tmp/uv-cache uv run python - <<'PY' ... PY`
 
 Use `UV_CACHE_DIR=/tmp/uv-cache` in sandboxed environments.
@@ -284,6 +292,11 @@ That cell is intentionally exporting `sta`, `g0`, `g1`, `g2`, and `g3` as
 top-level notebook names. If you instead wrote `_sta`, `_g0`, `_g1`, and so on,
 those names would stay local to the cell and would not be available in the rest
 of the notebook.
+
+The repo convention is stricter than that example alone: always expose the
+algebra object itself as well. That keeps notebook structure uniform and avoids
+revisiting the algebra cell later when a new scalar or helper construction needs
+it.
 
 ### Avoid accidental exported names
 
@@ -450,6 +463,7 @@ Examples:
 - duplicated slider display cells
 - exported marimo names that are only local intermediates
 - fixed plot bounds when the geometry obviously grows beyond them
+- multiple notebooks with overlapping subject matter but no clearly distinct claim
 
 ## Checklist for New Notebooks
 
@@ -471,7 +485,7 @@ Use `uv` for verification.
 Typical command:
 
 ```bash
-UV_CACHE_DIR=/tmp/uv-cache uv run python -m py_compile notebook.py
+UV_CACHE_DIR=/tmp/uv-cache uv run python -m py_compile notebooks/rotors/notebook.py
 ```
 
 For runtime spot checks:
@@ -483,16 +497,87 @@ print("import ok")
 PY
 ```
 
+## Topic Folders
+
+The notebooks now live under `notebooks/` and are grouped by topic.
+
+- `notebooks/rotors`
+  rotors, reflections, versors, rotor interpolation, and rotor action
+- `notebooks/grade`
+  grade decomposition, grade routing, involutions, norms, and algebraic structure
+- `notebooks/subspaces`
+  projectors, subspace actions, duality, and subspace representations
+- `notebooks/pga`
+  projective incidence geometry
+- `notebooks/sta`
+  spacetime algebra and relativity
+
 ## Current Notebooks
 
-- [notebook.py](./notebook.py): basic 2D rotor rotation
-- [lorentz_boost.py](./lorentz_boost.py): boosts and Minkowski diagrams in STA
-- [rotors_from_reflections.py](./rotors_from_reflections.py): reflections composing into rotors
-- [rotor_space.py](./rotor_space.py): vectors vs rotors, sandwich vs composition
-- [rotor_slerp.py](./rotor_slerp.py): 2D rotor slerp
-- [rotor_slerp_3d.py](./rotor_slerp_3d.py): 3D rotor slerp across planes
-- [projectors.py](./projectors.py): line and plane projection with one GA story
-- [dirac_antiparticles_sta.py](./dirac_antiparticles_sta.py): Dirac negative-energy states in STA
+### Rotors
+
+- [notebooks/rotors/notebook.py](./notebooks/rotors/notebook.py): basic 2D rotor rotation
+- [notebooks/rotors/reflections_ga.py](./notebooks/rotors/reflections_ga.py): single reflections as the primitive rigid motion
+- [notebooks/rotors/versor_composition.py](./notebooks/rotors/versor_composition.py): composing reflections into a general versor
+- [notebooks/rotors/rotors_from_reflections.py](./notebooks/rotors/rotors_from_reflections.py): reflections composing into rotors
+- [notebooks/rotors/rotor_space.py](./notebooks/rotors/rotor_space.py): vectors vs rotors, sandwich vs composition
+- [notebooks/rotors/rotor_slerp.py](./notebooks/rotors/rotor_slerp.py): 2D rotor slerp
+- [notebooks/rotors/rotor_slerp_3d.py](./notebooks/rotors/rotor_slerp_3d.py): 3D rotor slerp across planes
+- [notebooks/rotors/rotor_logarithms.py](./notebooks/rotors/rotor_logarithms.py): recovering bivector generators with `log(R)`
+- [notebooks/rotors/rotor_action_multivectors.py](./notebooks/rotors/rotor_action_multivectors.py): sandwich action on vectors and bivectors
+
+### Grade Structure
+
+- [notebooks/grade/bivectors_are_planes.py](./notebooks/grade/bivectors_are_planes.py): bivectors as oriented plane elements
+- [notebooks/grade/grade_and_dimension.py](./notebooks/grade/grade_and_dimension.py): grade as geometric dimension
+- [notebooks/grade/involutions_and_grade_ops.py](./notebooks/grade/involutions_and_grade_ops.py): reverse, involute, conjugate, and grade projections
+- [notebooks/grade/grade_structure.py](./notebooks/grade/grade_structure.py): even/odd structure and pseudoscalar parity
+- [notebooks/grade/grade_routing_products.py](./notebooks/grade/grade_routing_products.py): how products route between grades
+- [notebooks/grade/norms_units_inverses.py](./notebooks/grade/norms_units_inverses.py): square, norm, unit, and inverse
+- [notebooks/grade/bivector_commutators.py](./notebooks/grade/bivector_commutators.py): bivectors as a Lie algebra of infinitesimal rotations
+- [notebooks/grade/commutator_lie_jordan.py](./notebooks/grade/commutator_lie_jordan.py): antisymmetric vs symmetric product structure
+
+### Subspaces
+
+- [notebooks/subspaces/projectors.py](./notebooks/subspaces/projectors.py): line and plane projection with one GA story
+- [notebooks/subspaces/subspace_actions.py](./notebooks/subspaces/subspace_actions.py): projection, rejection, and reflection as one family
+- [notebooks/subspaces/duality_and_complements.py](./notebooks/subspaces/duality_and_complements.py): metric duality vs complement
+- [notebooks/subspaces/subspace_representations.py](./notebooks/subspaces/subspace_representations.py): one subspace, several equivalent representations
+
+### PGA
+
+- [notebooks/pga/meets_joins_pga.py](./notebooks/pga/meets_joins_pga.py): PGA joins and affine meet extraction
+- [notebooks/pga/meet_join_duality.py](./notebooks/pga/meet_join_duality.py): meet and join as dual incidence operations
+
+### STA
+
+- [notebooks/sta/lorentz_boost.py](./notebooks/sta/lorentz_boost.py): boosts and Minkowski diagrams in STA
+- [notebooks/sta/relative_vectors_sta.py](./notebooks/sta/relative_vectors_sta.py): the Pauli subalgebra inside STA
+- [notebooks/sta/null_vectors_sta.py](./notebooks/sta/null_vectors_sta.py): timelike, spacelike, and null vectors in STA
+- [notebooks/sta/dirac_antiparticles_sta.py](./notebooks/sta/dirac_antiparticles_sta.py): Dirac negative-energy states in STA
+- [notebooks/sta/thomas_wigner_rotation.py](./notebooks/sta/thomas_wigner_rotation.py): residual spatial rotation from non-collinear boosts
+- [notebooks/sta/one_g_travel.py](./notebooks/sta/one_g_travel.py): constant proper acceleration in STA
+
+## Notebook Families
+
+The suite is now large enough that related notebooks should be framed as
+companions rather than accidental repeats.
+
+- reflections -> versors -> rotors:
+  `notebooks/rotors/reflections_ga.py`, `notebooks/rotors/versor_composition.py`, `notebooks/rotors/rotors_from_reflections.py`
+- rotor representations and interpolation:
+  `notebooks/rotors/rotor_space.py`, `notebooks/rotors/rotor_logarithms.py`, `notebooks/rotors/rotor_slerp.py`, `notebooks/rotors/rotor_slerp_3d.py`
+- blades, grades, and actions:
+  `notebooks/grade/bivectors_are_planes.py`, `notebooks/grade/grade_and_dimension.py`, `notebooks/rotors/rotor_action_multivectors.py`, `notebooks/subspaces/subspace_actions.py`
+- duality and incidence:
+  `notebooks/subspaces/duality_and_complements.py`, `notebooks/subspaces/subspace_representations.py`, `notebooks/pga/meets_joins_pga.py`, `notebooks/pga/meet_join_duality.py`
+- STA and relativity:
+  `notebooks/sta/lorentz_boost.py`, `notebooks/sta/null_vectors_sta.py`, `notebooks/sta/thomas_wigner_rotation.py`, `notebooks/sta/one_g_travel.py`
+- STA structure and quantum-adjacent ideas:
+  `notebooks/sta/relative_vectors_sta.py`, `notebooks/sta/dirac_antiparticles_sta.py`
+
+When adding a new notebook near an existing family, state explicitly what the
+new notebook adds that the older one does not.
 
 ## Bottom Line
 

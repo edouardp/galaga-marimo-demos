@@ -17,20 +17,27 @@ def _():
 
 @app.cell
 def _(plt):
-    def draw_reflections(n1, n2, x, x2):
-        a = n1.vector_part[:2]
-        b = n2.vector_part[:2]
+    def draw_reflections(normal1, normal2, x, x1, x2):
+        a = normal1.vector_part[:2]
+        b = normal2.vector_part[:2]
+        m1 = [-a[1], a[0]]
+        m2 = [-b[1], b[0]]
         xv = x.vector_part[:2]
+        x1v = x1.vector_part[:2]
         x2v = x2.vector_part[:2]
 
         fig, ax = plt.subplots(figsize=(6, 6))
-        ax.plot([-2.5 * a[0], 2.5 * a[0]], [-2.5 * a[1], 2.5 * a[1]], color="steelblue", alpha=0.45)
-        ax.plot([-2.5 * b[0], 2.5 * b[0]], [-2.5 * b[1], 2.5 * b[1]], color="darkorange", alpha=0.45)
+        ax.plot([-2.5 * m1[0], 2.5 * m1[0]], [-2.5 * m1[1], 2.5 * m1[1]], color="steelblue", alpha=0.45)
+        ax.plot([-2.5 * m2[0], 2.5 * m2[0]], [-2.5 * m2[1], 2.5 * m2[1]], color="darkorange", alpha=0.45)
+        ax.annotate("", xy=a, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=1.2, alpha=0.35, linestyle="--"))
+        ax.annotate("", xy=b, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="darkorange", lw=1.2, alpha=0.35, linestyle="--"))
         ax.annotate("", xy=xv, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="black", lw=2))
+        ax.annotate("", xy=x1v, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="black", lw=2, alpha=0.5))
         ax.annotate("", xy=x2v, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
-        ax.plot([], [], color="steelblue", label="first mirror")
-        ax.plot([], [], color="darkorange", label="second mirror")
+        ax.plot([], [], color="steelblue", label="first mirror line")
+        ax.plot([], [], color="darkorange", label="second mirror line")
         ax.plot([], [], color="black", label="input vector")
+        ax.plot([], [], color="black", alpha=0.5, label="after first reflection")
         ax.plot([], [], color="crimson", label="after two reflections")
         ax.set_xlim(-2, 2)
         ax.set_ylim(-2, 2)
@@ -44,6 +51,16 @@ def _(plt):
         return fig
 
     return (draw_reflections,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Rotors from Reflections
+
+    This is the third notebook in the reflection-to-rotor sequence. [reflections_ga.py](./reflections_ga.py) shows one reflection, [versor_composition.py](./versor_composition.py) packages two reflections into a versor, and this notebook makes the rotor interpretation explicit.
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -79,8 +96,8 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    alpha = mo.ui.slider(0, 180, step=1, value=20, label="First mirror angle", show_value=True)
-    beta = mo.ui.slider(0, 180, step=1, value=65, label="Second mirror angle", show_value=True)
+    alpha = mo.ui.slider(0, 360, step=1, value=20, label="First mirror line angle", show_value=True)
+    beta = mo.ui.slider(0, 360, step=1, value=65, label="Second mirror line angle", show_value=True)
     vector_angle = mo.ui.slider(0, 180, step=1, value=15, label="Input vector angle", show_value=True)
     return alpha, beta, vector_angle
 
@@ -96,12 +113,15 @@ def _(alg, alpha, beta, draw_reflections, e1, e2, gm, mo, np, vector_angle):
     b = np.radians(beta.value)
     v = np.radians(vector_angle.value)
 
-    n1 = (np.cos(a) * e1 + np.sin(a) * e2).name("n_1")
-    n2 = (np.cos(b) * e1 + np.sin(b) * e2).name("n_2")
+    line1 = np.cos(a) * e1 + np.sin(a) * e2
+    line2 = np.cos(b) * e1 + np.sin(b) * e2
+    n1 = ((-line1 | e2) * e1 + (line1 | e1) * e2).name("n_1")
+    n2 = ((-line2 | e2) * e1 + (line2 | e1) * e2).name("n_2")
     x = (np.cos(v) * e1 + np.sin(v) * e2).name("x")
     x1 = (-n1 * x * n1).name("x_1")
     x2 = (-n2 * x1 * n2).name("x_2")
     R = (n2 * n1).name("R")
+    rotor_action = (R * x * ~R)
     rotation_angle = alg.scalar(np.radians(2 * (beta.value - alpha.value))).name(latex=r"\theta")
 
     _md = t"""
@@ -111,10 +131,22 @@ def _(alg, alpha, beta, draw_reflections, e1, e2, gm, mo, np, vector_angle):
     {x1.display()} <br/>
     {x2.display()} <br/>
     {R.display()} <br/>
+    {rotor_action.display()} <br/>
+    The sliders set mirror line angles; $n_1$ and $n_2$ are the corresponding unit normals used in the rotor construction. <br/>
     {rotation_angle.display()} $\\quad$ with $\\theta = 2(\\beta - \\alpha) = {2 * (beta.value - alpha.value)}^\\circ$
     """
 
-    mo.vstack([alpha, beta, vector_angle,gm.md(_md), draw_reflections(n1, n2, x, x2)])
+    mo.vstack([alpha, beta, vector_angle, gm.md(_md), draw_reflections(n1, n2, x, x1, x2)])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Key Point
+
+    A rotor is not a mysterious new kind of object. In this 2D Euclidean setting it is the compressed record of two reflections, and the angle between the mirrors determines the final rotation.
+    """)
     return
 
 

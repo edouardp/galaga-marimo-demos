@@ -156,8 +156,13 @@ def _(
     _tau_coast = tau_coast_years.value * _t_s
 
     _phi = (_g * _tau_acc / _c).name(latex=r"\phi")
-    _beta = np.tanh(_phi.scalar_part)
-    _gamma = np.cosh(_phi.scalar_part)
+    _B = (g0 * g1).name("B")
+    _phi_mv = (_phi + 0 * g0).name(latex=r"\varphi")
+    _Lambda = exp((_phi / 2) * _B).name(latex=r"\Lambda")
+    _ship_time_axis = sandwich(_Lambda, g0).name(latex=r"\gamma_0'")
+    _gamma = (_ship_time_axis | g0).scalar_part
+    _gamma_beta = (_ship_time_axis | g1).scalar_part
+    _beta = _gamma_beta / _gamma
 
     _t_acc = (_c / _g) * np.sinh(_phi.scalar_part)
     _x_acc = (_c**2 / _g) * (np.cosh(_phi.scalar_part) - 1.0)
@@ -171,17 +176,13 @@ def _(
     _total_earth_time_y = (_total_earth_time_s / _t_s).name(latex="years_{earth}")
     _total_distance = 2.0 * _x_acc + _x_coast
 
-    _B = (g0 * g1).name("B")
-    _phi_mv = (_phi + 0 * g0).name(latex=r"\varphi")
-    _Lambda = exp((_phi / 2) * _B).name(latex=r"\Lambda")
-    _ship_time_axis = sandwich(_Lambda, g0).name(latex=r"\gamma_0'")
-
     _md = t"""
     {_B.display()} <br/>
     {_phi.display()} <br/>
     {_phi_mv.display()} <br/>
     {_Lambda.display()} <br/>
     {_ship_time_axis.display()} <br/>
+    From the boosted ship time axis: $\\gamma = {_gamma:,.4f}$ and $\\gamma\\beta = {_gamma_beta:,.4f}$ <br/>
     Peak speed: {_beta:.14f}c $\\quad and \\quad \\gamma$ = {_gamma:,.4f} <br/>
     {(_total_ship_time_y).display():.3f} years <br/>
     {(_total_earth_time_y).display():,.3f} years <br/>
