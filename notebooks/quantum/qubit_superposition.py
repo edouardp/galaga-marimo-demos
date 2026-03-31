@@ -17,8 +17,8 @@ def _():
 
 @app.cell
 def _(np, plt):
-    def draw_bloch_state(state_xyz):
-        _s = np.array(state_xyz, dtype=float)
+    def draw_bloch_state(state):
+        _s = np.array(state.eval().vector_part, dtype=float)
 
         _fig = plt.figure(figsize=(8.0, 6.0))
         _ax = _fig.add_subplot(111, projection="3d")
@@ -107,7 +107,7 @@ def _(mo):
 def _(Algebra):
     alg = Algebra((1, 1, 1))
     e1, e2, e3 = alg.basis_vectors(lazy=True)
-    return alg, e1, e2, e3
+    return e1, e2, e3
 
 
 @app.cell
@@ -156,7 +156,7 @@ def _(draw_bloch_state, e1, e2, e3, exp, gm, mo, np, phi, theta):
             theta,
             phi,
             gm.md(_md),
-            draw_bloch_state(_s_xyz),
+            draw_bloch_state(_s),
         ]
     )
     return

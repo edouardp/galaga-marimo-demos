@@ -1,4 +1,4 @@
-# galaga-playing
+# galaga-marimo-demos
 
 This repo contains small, concept-first `marimo` notebooks built with `galaga`.
 The goal is not to dump API demos into notebooks. The goal is to build short,
@@ -124,6 +124,12 @@ Plot helpers should:
 - extract components locally
 - close figures with `plt.close(fig)`
 - return the figure
+
+Important:
+
+- keep plot plumbing inside the helper whenever possible
+- do not unpack `vector_part`, `scalar_part`, or coefficient arrays in the main teaching cell just to satisfy a plotting API
+- let the main cell stay focused on the GA explanation, symbolic objects, and displayed relationships
 
 ### 3. Short algebra-intro markdown cell before `Algebra(...)`
 

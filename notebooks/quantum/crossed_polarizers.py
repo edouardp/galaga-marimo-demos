@@ -17,9 +17,9 @@ def _():
 
 @app.cell
 def _(np, plt):
-    def draw_crossed_polarizers(theta_deg, show_middle, mid_axis_xy, fields_xy, intensities, labels):
-        _mid_axis = np.array(mid_axis_xy, dtype=float)
-        _fields = [np.array(_f, dtype=float) for _f in fields_xy]
+    def draw_crossed_polarizers(theta_deg, show_middle, middle_axis, fields, intensities, labels):
+        _mid_axis = np.array(middle_axis.eval().vector_part[:2], dtype=float)
+        _fields = [np.array(_f.eval().vector_part[:2], dtype=float) for _f in fields]
         _intensities = np.array(intensities, dtype=float)
 
         _fig, (_ax1, _ax2) = plt.subplots(1, 2, figsize=(11.4, 4.8))
@@ -183,15 +183,12 @@ def _(draw_crossed_polarizers, e1, e2, gm, mo, np, theta, use_middle):
     {_formula}
     """
 
-    _field_xy = [_field.vector_part[:2] if hasattr(_field, "vector_part") else np.zeros(2) for _field in _field_chain]
-    _middle_xy = _middle_axis.vector_part[:2]
-
     mo.vstack(
         [
             use_middle,
             theta,
             gm.md(_md),
-            draw_crossed_polarizers(theta.value, use_middle.value, _middle_xy, _field_xy, _intensities, _labels),
+            draw_crossed_polarizers(theta.value, use_middle.value, _middle_axis, _field_chain, _intensities, _labels),
         ]
     )
     return

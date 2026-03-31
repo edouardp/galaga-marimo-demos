@@ -11,3 +11,11 @@ wheels/
 
 # Marimo session data
 __marimo__/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store

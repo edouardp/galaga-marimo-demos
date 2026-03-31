@@ -17,9 +17,9 @@ def _():
 
 @app.cell
 def _(np, plt):
-    def draw_polarization(u_xy, v_xy):
-        _u = np.array(u_xy, dtype=float)
-        _v = np.array(v_xy, dtype=float)
+    def draw_polarization(u, v):
+        _u = np.array(u.eval().vector_part[:2], dtype=float)
+        _v = np.array(v.eval().vector_part[:2], dtype=float)
         _sum = _u + _v
 
         _fig, _ax = plt.subplots(figsize=(7.2, 5.4))
@@ -127,9 +127,6 @@ def _(alg, draw_polarization, e1, e2, gm, mo, np, turn, v_length):
     _dot_by_identity = 0.5 * (_sum_sq - _u_sq - _v_sq)
     _dot_direct = (_u | _v).scalar_part
 
-    _u_xy = _u.vector_part[:2]
-    _v_xy = _v.vector_part[:2]
-
     _md = t"""
     {_u.display()} <br/>
     {_v.display()} <br/>
@@ -146,7 +143,7 @@ def _(alg, draw_polarization, e1, e2, gm, mo, np, turn, v_length):
             turn,
             v_length,
             gm.md(_md),
-            draw_polarization(_u_xy, _v_xy),
+            draw_polarization(_u, _v),
         ]
     )
     return
