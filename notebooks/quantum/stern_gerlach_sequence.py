@@ -17,12 +17,12 @@ def _():
 
 @app.cell
 def _(np, plt):
-    def draw_sg_sequence(axes, incoming_states, outgoing_states, up_probs, down_probs, total_pass):
+    def draw_sg_sequence(axes, incoming_states, outgoing_states, north_probs, south_probs, total_pass):
         _axes = [np.array(_a, dtype=float) for _a in axes]
         _incoming = [np.array(_s, dtype=float) for _s in incoming_states]
         _outgoing = [np.array(_s, dtype=float) if _s is not None else None for _s in outgoing_states]
-        _up = np.array(up_probs, dtype=float)
-        _down = np.array(down_probs, dtype=float)
+        _north = np.array(north_probs, dtype=float)
+        _south = np.array(south_probs, dtype=float)
 
         _fig = plt.figure(figsize=(12.0, 8.0))
         _gs = _fig.add_gridspec(2, 3, height_ratios=[1.0, 0.95])
@@ -30,7 +30,63 @@ def _(np, plt):
         _bar_ax = _fig.add_subplot(_gs[1, :])
 
         _titles = ["Machine 1: prepare +e2", "Machine 2: rotate and split", "Machine 3: test final axis"]
-        _axis_colors = ["#d62828", "#2563eb", "#7c3aed"]
+
+        def _draw_magnets(_ax, _axis):
+            _axis = np.array(_axis, dtype=float)
+            _axis = _axis / np.linalg.norm(_axis)
+            _perp = np.array([-_axis[1], _axis[0]])
+            _north_center = 0.72 * _axis
+            _south_center = -0.72 * _axis
+            _height = 0.40
+            _half_width = 0.22
+
+            _north_top_center = _north_center + 0.32 * _height * _axis
+            _north_shoulder_center = _north_center - 0.06 * _height * _axis
+            _north_tip = _north_center - 0.5 * _height * _axis
+            _north_shape = np.vstack(
+                [
+                    _north_top_center + _half_width * _perp,
+                    _north_top_center - _half_width * _perp,
+                    _north_shoulder_center - _half_width * _perp,
+                    _north_tip,
+                    _north_shoulder_center + _half_width * _perp,
+                ]
+            )
+
+            _south_top_center = _south_center - 0.5 * _height * _axis
+            _south_bottom_left = _south_center + 0.5 * _height * _axis + _half_width * _perp
+            _south_bottom_right = _south_center + 0.5 * _height * _axis - _half_width * _perp
+            _south_notch = _south_center + 0.12 * _height * _axis
+            _south_shape = np.vstack(
+                [
+                    _south_top_center + _half_width * _perp,
+                    _south_top_center - _half_width * _perp,
+                    _south_bottom_right,
+                    _south_notch,
+                    _south_bottom_left,
+                ]
+            )
+
+            _ax.add_patch(plt.Polygon(_north_shape, closed=True, facecolor="#d62828", edgecolor="none", alpha=0.96))
+            _ax.add_patch(plt.Polygon(_south_shape, closed=True, facecolor="#2563eb", edgecolor="none", alpha=0.96))
+            _ax.text(
+                *(_north_center + 0.40 * _axis),
+                "N",
+                color="#d62828",
+                ha="center",
+                va="center",
+                fontsize=12,
+                fontweight="bold",
+            )
+            _ax.text(
+                *(_south_center - 0.40 * _axis),
+                "S",
+                color="#2563eb",
+                ha="center",
+                va="center",
+                fontsize=12,
+                fontweight="bold",
+            )
 
         for _i, _ax in enumerate(_panel_axes):
             _n = _axes[_i]
@@ -41,19 +97,7 @@ def _(np, plt):
             _ax.add_patch(_circle)
             _ax.axhline(0, color="gray", alpha=0.15, linewidth=0.8)
             _ax.axvline(0, color="gray", alpha=0.15, linewidth=0.8)
-
-            _ax.annotate(
-                "",
-                xy=_n,
-                xytext=(0, 0),
-                arrowprops=dict(arrowstyle="-|>", color=_axis_colors[_i], lw=2.8, mutation_scale=20),
-            )
-            _ax.annotate(
-                "",
-                xy=-_n,
-                xytext=(0, 0),
-                arrowprops=dict(arrowstyle="-|>", color=_axis_colors[_i], lw=1.6, mutation_scale=16, alpha=0.35),
-            )
+            _draw_magnets(_ax, _n)
             _ax.annotate(
                 "",
                 xy=_s_in,
@@ -62,21 +106,11 @@ def _(np, plt):
             )
             if np.linalg.norm(_s_in) < 1e-8:
                 _ax.scatter([0], [0], color="#222222", s=36, zorder=5)
-            if _s_out is not None:
-                _ax.annotate(
-                    "",
-                    xy=_s_out,
-                    xytext=(0, 0),
-                    arrowprops=dict(arrowstyle="-|>", color="#f97316", lw=2.8, mutation_scale=20, alpha=0.95),
-                )
 
-            _ax.text(1.12 * _n[0], 1.12 * _n[1], "axis", color=_axis_colors[_i], ha="center", va="center")
             if np.linalg.norm(_s_in) < 1e-8:
                 _ax.text(0.0, -0.14, "ensemble avg", color="#222222", ha="center", va="center")
             else:
                 _ax.text(1.12 * _s_in[0], 1.12 * _s_in[1] - 0.08, "in", color="#222222", ha="center", va="center")
-            if _s_out is not None:
-                _ax.text(1.12 * _s_out[0], 1.12 * _s_out[1] + 0.08, "chosen", color="#f97316", ha="center", va="center")
 
             _ax.set_xlim(-1.25, 1.25)
             _ax.set_ylim(-1.25, 1.25)
@@ -87,13 +121,13 @@ def _(np, plt):
 
         _x = np.arange(3)
         _w = 0.34
-        _bar_ax.bar(_x - _w / 2, _up, width=_w, color="#f97316", alpha=0.88, label="up output")
-        _bar_ax.bar(_x + _w / 2, _down, width=_w, color="#64748b", alpha=0.88, label="down output")
+        _bar_ax.bar(_x - _w / 2, _north, width=_w, color="#d62828", alpha=0.88, label="N output")
+        _bar_ax.bar(_x + _w / 2, _south, width=_w, color="#2563eb", alpha=0.88, label="S output")
         _bar_ax.set_xticks(_x, ["machine 1", "machine 2", "machine 3"])
         _bar_ax.set_ylim(0.0, 1.05)
         _bar_ax.grid(True, axis="y", alpha=0.22)
         _bar_ax.set_ylabel("conditional probability")
-        _bar_ax.set_title(f"Output probabilities at each machine; total surviving fraction = {total_pass:.3f}")
+        _bar_ax.set_title(f"N/S output probabilities at each machine; total surviving fraction = {total_pass:.3f}")
         _bar_ax.legend(loc="upper right")
 
         plt.close(_fig)
@@ -160,15 +194,15 @@ def _(alg, alpha, beta, draw_sg_sequence, e1, e2, gm, mo, np):
     _n2 = (np.sin(_alpha) * e1 + np.cos(_alpha) * e2).eval().name(latex=r"\angle_2")
     _n3 = (np.sin(_beta) * e1 + np.cos(_beta) * e2).eval().name(latex=r"\angle_3")
 
-    _p1_up = (0.5 * (1 + (_s_in | _n1))).name(latex=r"P_1(\uparrow)")
-    _p1_down = (1 - _p1_up).name(latex=r"P_1(\downarrow)")
+    _p1_up = (0.5 * (1 + (_s_in | _n1))).name(latex=r"P_1(N)")
+    _p1_down = (1 - _p1_up).name(latex=r"P_1(S)")
 
-    _p2_up = (0.5 * (1 + (_s1 | _n2))).name(latex=r"P_2(\uparrow)")
-    _p2_down = (1 - _p2_up).name(latex=r"P_2(\downarrow)")
+    _p2_up = (0.5 * (1 + (_s1 | _n2))).name(latex=r"P_2(N)")
+    _p2_down = (1 - _p2_up).name(latex=r"P_2(S)")
     _s2 = _n2.copy_as(latex=r"s_2")
 
-    _p3_up = (0.5 * (1 + (_s2 | _n3))).name(latex=r"P_3(\uparrow)")
-    _p3_down = (1 - _p3_up).name(latex=r"P_3(\downarrow)")
+    _p3_up = (0.5 * (1 + (_s2 | _n3))).name(latex=r"P_3(N \mid N_2)")
+    _p3_down = (1 - _p3_up).name(latex=r"P_3(S \mid N_2)")
     _total_pass = _p1_up * _p2_up * _p3_up
 
     _md = t"""
