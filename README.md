@@ -113,12 +113,22 @@ Typical imports:
 - `marimo as mo`
 - `matplotlib.pyplot as plt`
 
-### 2. Plot helper cell
+### 2. Plotting Section at the End
 
-Put plotting helpers near the top in their own cell. Return the plotting
-function(s) for later use.
+Put plotting code at the end of the notebook, not near the top.
 
-Plot helpers should:
+Use a final section labeled:
+
+`## Appendum: Plotting Code`
+
+That section heading should be introduced with a hidden-code markdown cell:
+
+`@app.cell(hide_code=True)`
+
+The goal is to let the conceptual and algebraic story read straight through
+before the reader gets to implementation-heavy plotting details.
+
+Plotting helpers in that final section should:
 
 - take already-computed GA objects as arguments
 - extract components locally
@@ -319,10 +329,10 @@ Do not return unnecessary values from rendering cells.
 Each cell should have one job:
 
 - define imports
-- define plot helpers
 - define the algebra
 - define controls
 - compute and render one concept
+- add plotting code at the end under `## Appendum: Plotting Code`
 
 ### Keep helper functions pure
 
@@ -549,6 +559,7 @@ The notebooks now live under `notebooks/` and are grouped by topic.
 - [notebooks/subspaces/subspace_actions.py](./notebooks/subspaces/subspace_actions.py): projection, rejection, and reflection as one family
 - [notebooks/subspaces/duality_and_complements.py](./notebooks/subspaces/duality_and_complements.py): metric duality vs complement
 - [notebooks/subspaces/subspace_representations.py](./notebooks/subspaces/subspace_representations.py): one subspace, several equivalent representations
+- [notebooks/subspaces/polygon_area_bivectors.py](./notebooks/subspaces/polygon_area_bivectors.py): polygon area from signed bivector fan sums
 
 ### PGA
 
@@ -560,9 +571,18 @@ The notebooks now live under `notebooks/` and are grouped by topic.
 - [notebooks/sta/lorentz_boost.py](./notebooks/sta/lorentz_boost.py): boosts and Minkowski diagrams in STA
 - [notebooks/sta/relative_vectors_sta.py](./notebooks/sta/relative_vectors_sta.py): the Pauli subalgebra inside STA
 - [notebooks/sta/null_vectors_sta.py](./notebooks/sta/null_vectors_sta.py): timelike, spacelike, and null vectors in STA
+- [notebooks/sta/null_directions_celestial_sphere.py](./notebooks/sta/null_directions_celestial_sphere.py): null directions and the celestial sphere as a real twistor precursor
 - [notebooks/sta/dirac_antiparticles_sta.py](./notebooks/sta/dirac_antiparticles_sta.py): Dirac negative-energy states in STA
 - [notebooks/sta/thomas_wigner_rotation.py](./notebooks/sta/thomas_wigner_rotation.py): residual spatial rotation from non-collinear boosts
 - [notebooks/sta/one_g_travel.py](./notebooks/sta/one_g_travel.py): constant proper acceleration in STA
+
+### Quantum and Spin
+
+- [notebooks/quantum/stern_gerlach_intro.py](./notebooks/quantum/stern_gerlach_intro.py): one-machine Stern-Gerlach probabilities and output states
+- [notebooks/quantum/stern_gerlach_sequence.py](./notebooks/quantum/stern_gerlach_sequence.py): three-machine Stern-Gerlach path filtering and branching
+- [notebooks/quantum/spinor_double_cover.py](./notebooks/quantum/spinor_double_cover.py): `Spin(2)` versus `SO(2)` and the rotor double cover
+- [notebooks/quantum/qubit_superposition.py](./notebooks/quantum/qubit_superposition.py): qubit pure states as Bloch-sphere directions
+- [notebooks/quantum/crossed_polarizers.py](./notebooks/quantum/crossed_polarizers.py): crossed polarizers as projection geometry
 
 ## Notebook Families
 
@@ -581,6 +601,8 @@ companions rather than accidental repeats.
   `notebooks/sta/lorentz_boost.py`, `notebooks/sta/null_vectors_sta.py`, `notebooks/sta/thomas_wigner_rotation.py`, `notebooks/sta/one_g_travel.py`
 - STA structure and quantum-adjacent ideas:
   `notebooks/sta/relative_vectors_sta.py`, `notebooks/sta/dirac_antiparticles_sta.py`
+- spin and quantum-adjacent intuition:
+  `notebooks/quantum/stern_gerlach_intro.py`, `notebooks/quantum/stern_gerlach_sequence.py`, `notebooks/quantum/spinor_double_cover.py`, `notebooks/quantum/qubit_superposition.py`, `notebooks/quantum/crossed_polarizers.py`
 
 When adding a new notebook near an existing family, state explicitly what the
 new notebook adds that the older one does not.

@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.0"
 app = marimo.App(width="medium")
 
 
@@ -180,16 +180,8 @@ def _(
     Individual wedge terms:<br/>
     """
 
-    mo.vstack(
-        [
-            polygon,
-            px,
-            py,
-            gm.md(_md),
-            gm.md(_term_block),
-            draw_polygon_area(_verts_xy, (px.value, py.value), _terms),
-        ]
-    )
+    mo.vstack([polygon, px, py,
+    gm.md(_md), gm.md(_term_block), draw_polygon_area(_verts_xy, (px.value, py.value), _terms)])
     return
 
 

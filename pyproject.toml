@@ -9,5 +9,11 @@ dependencies = [
     "galaga-marimo>=0.2.0",
     "marimo>=0.21.1",
     "matplotlib>=3.10.8",
+    "pydantic-ai>=1.76.0",
     "sankeyflow>=0.4.1",
+]
+
+[dependency-groups]
+dev = [
+    "openai>=2.30.0",
 ]
