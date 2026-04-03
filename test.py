@@ -6,60 +6,46 @@ app = marimo.App()
 
 @app.cell
 def _():
-    from galaga import Algebra, rev, complement, conjugate, dual, Notation
+    from galaga import Algebra, rev, complement, conjugate, dual, Notation, log
+    import galaga_marimo as gm
 
-    return Algebra, Notation
-
-
-@app.cell
-def _(Algebra):
-    sta = Algebra([1,-1,-1,-1], names="gamma")
-    y0,y1,y2,y3 = sta.basis_vectors(lazy=True)
-    return y0, y1, y2
+    return Algebra, Notation, gm
 
 
 @app.cell
 def _(Algebra, Notation):
-
-    alg = Algebra([1,1,1], notation=Notation().hestenes())
+    alg = Algebra([1,1,1], notation=Notation().with_scientific(style="times"))
     e1,e2,e3 = alg.basis_vectors(lazy=True)
-    return e1, e2
+    return alg, e1
 
 
 @app.cell
-def _(e1, e2):
-    B = e1^e2
-    return (B,)
+def _(alg, e1, gm):
+    v = alg.pi * e1
 
+    gm.md(t"""
+    {(alg.c * alg.hbar).display():g} <br/>
+    {(alg.pi).display():g} <br/>
 
-@app.cell
-def _(B):
-    B**2
+    """)
     return
 
 
 @app.cell
-def _(B):
-    (B*B).display()
+def _(alg):
+    alg.c.display()
     return
 
 
 @app.cell
-def _(B):
-    (B*~B).display()
+def _():
+    print(1/100000)
     return
 
 
 @app.cell
-def _(y0, y1, y2):
-    C = y0^y1
-    D = y1^y2
-    return
-
-
-@app.cell
-def _(B):
-    ~B
+def _(alg):
+    alg.hbar.display()
     return
 
 

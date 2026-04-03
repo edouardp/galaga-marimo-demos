@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.0"
 app = marimo.App(width="medium")
 
 
@@ -12,31 +12,17 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
 
-    return Algebra, anticommutator, commutator, gm, jordan_product, lie_bracket, mo, np, plt
-
-
-@app.cell
-def _(np, plt):
-    def draw_bivector_coeffs(A, B, comm):
-        _labels = ["e12", "e13", "e23"]
-        _x = np.arange(3)
-        _fig, _ax = plt.subplots(figsize=(6.8, 4.8))
-
-        def _coeffs(mv):
-            _mv = mv.eval()
-            return np.array([_mv.data[3], _mv.data[5], _mv.data[6]])
-
-        _ax.bar(_x - 0.25, _coeffs(A), width=0.25, color="steelblue", alpha=0.8, label="A")
-        _ax.bar(_x, _coeffs(B), width=0.25, color="darkorange", alpha=0.8, label="B")
-        _ax.bar(_x + 0.25, _coeffs(comm), width=0.25, color="crimson", alpha=0.8, label="[A,B]")
-        _ax.set_xticks(_x, _labels)
-        _ax.grid(True, axis="y", alpha=0.25)
-        _ax.set_title("Commutator structure in the bivector basis")
-        _ax.legend(loc="upper right")
-        plt.close(_fig)
-        return _fig
-
-    return (draw_bivector_coeffs,)
+    return (
+        Algebra,
+        anticommutator,
+        commutator,
+        gm,
+        jordan_product,
+        lie_bracket,
+        mo,
+        np,
+        plt,
+    )
 
 
 @app.cell(hide_code=True)
@@ -65,7 +51,7 @@ def _(mo):
 def _(Algebra):
     alg = Algebra((1, 1, 1))
     e1, e2, e3 = alg.basis_vectors(lazy=True)
-    return alg, e1, e2, e3
+    return e1, e2, e3
 
 
 @app.cell
@@ -136,6 +122,30 @@ def _(mo):
     The commutator is about order-sensitive structure and generators. The Jordan product is about the symmetric side. Both come from the same geometric product, but they answer different questions.
     """)
     return
+
+
+@app.cell(hide_code=True)
+def _(np, plt):
+    def draw_bivector_coeffs(A, B, comm):
+        _labels = ["e12", "e13", "e23"]
+        _x = np.arange(3)
+        _fig, _ax = plt.subplots(figsize=(6.8, 4.8))
+
+        def _coeffs(mv):
+            _mv = mv.eval()
+            return np.array([_mv.data[3], _mv.data[5], _mv.data[6]])
+
+        _ax.bar(_x - 0.25, _coeffs(A), width=0.25, color="steelblue", alpha=0.8, label="A")
+        _ax.bar(_x, _coeffs(B), width=0.25, color="darkorange", alpha=0.8, label="B")
+        _ax.bar(_x + 0.25, _coeffs(comm), width=0.25, color="crimson", alpha=0.8, label="[A,B]")
+        _ax.set_xticks(_x, _labels)
+        _ax.grid(True, axis="y", alpha=0.25)
+        _ax.set_title("Commutator structure in the bivector basis")
+        _ax.legend(loc="upper right")
+        plt.close(_fig)
+        return _fig
+
+    return (draw_bivector_coeffs,)
 
 
 @app.cell
