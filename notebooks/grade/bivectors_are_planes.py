@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.0"
 app = marimo.App(width="medium")
 
 
@@ -13,28 +13,6 @@ def _():
     import matplotlib.pyplot as plt
 
     return Algebra, gm, mo, norm, np, plt, unit
-
-
-@app.cell
-def _(plt):
-    def draw_plane_vectors(a, b):
-        _a = a.vector_part[:2]
-        _b = b.vector_part[:2]
-        _fig, _ax = plt.subplots(figsize=(5.8, 5.8))
-        _ax.annotate("", xy=_a, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
-        _ax.annotate("", xy=_b, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
-        _ax.fill([0, _a[0], _a[0] + _b[0], _b[0]], [0, _a[1], _a[1] + _b[1], _b[1]], color="goldenrod", alpha=0.25)
-        _ax.set_xlim(-2, 2)
-        _ax.set_ylim(-2, 2)
-        _ax.set_aspect("equal")
-        _ax.grid(True, alpha=0.25)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_title("A bivector as an oriented area element")
-        plt.close(_fig)
-        return _fig
-
-    return (draw_plane_vectors,)
 
 
 @app.cell(hide_code=True)
@@ -81,7 +59,7 @@ def _(mo):
 def _(b_length, draw_plane_vectors, e1, e2, gm, mo, norm, np, opening, unit):
     _phi = np.radians(opening.value)
     _a = e1.name("a")
-    _b = (b_length.value * np.cos(_phi) * e1 + b_length.value * np.sin(_phi) * e2).name("b")
+    _b = (b_length.value * np.cos(_phi) * e1 + b_length.value * np.sin(_phi) * e2).eval().name("b")
     _B = (_a ^ _b).name("B")
     _Bhat = unit(_B)
     _area = norm(_B).eval()
@@ -108,9 +86,34 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
     return
+
+
+@app.cell(hide_code=True)
+def _(plt):
+    def draw_plane_vectors(a, b):
+        _a = a.vector_part[:2]
+        _b = b.vector_part[:2]
+        _fig, _ax = plt.subplots(figsize=(5.8, 5.8))
+        _ax.annotate("", xy=_a, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
+        _ax.annotate("", xy=_b, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
+        _ax.fill([0, _a[0], _a[0] + _b[0], _b[0]], [0, _a[1], _a[1] + _b[1], _b[1]], color="goldenrod", alpha=0.25)
+        _ax.set_xlim(-2, 2)
+        _ax.set_ylim(-2, 2)
+        _ax.set_aspect("equal")
+        _ax.grid(True, alpha=0.25)
+        _ax.set_xlabel("e1")
+        _ax.set_ylabel("e2")
+        _ax.set_title("A bivector as an oriented area element")
+        plt.close(_fig)
+        return _fig
+
+    return (draw_plane_vectors,)
 
 
 if __name__ == "__main__":
