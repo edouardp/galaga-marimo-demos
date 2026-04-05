@@ -7,6 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     from galaga import Algebra, exp, scalar_sqrt, symbolic
+    from galaga.blade_convention import b_sta
     import galaga_marimo as gm
     import numpy as np
     import marimo as mo
@@ -63,7 +64,7 @@ def _(mo):
 
 @app.cell
 def _(Algebra):
-    sta = Algebra((1, -1, -1, -1), names="gamma")
+    sta = Algebra((1, -1, -1, -1), blades=b_sta())
     g0, g1, g2, g3 = sta.basis_vectors(lazy=True)
     I = sta.pseudoscalar(lazy=True).name("I")
     return I, g0, g1, g2, g3, sta
