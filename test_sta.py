@@ -18,9 +18,9 @@ def _():
 
 @app.cell
 def _(Algebra, b_sta):
-    sta = Algebra((1, -1, -1, -1), blades=b_sta(sigmas=True))
+    sta = Algebra((1, -1, -1, -1), blades=b_sta(sigmas=True, pss="I"))
     g0, g1, g2, g3 = sta.basis_vectors()
-    return g0, g1
+    return g0, g1, sta
 
 
 @app.cell
@@ -30,7 +30,25 @@ def _(g0, g1):
 
 
 @app.cell
+def _(sta):
+    sta.locals(grades=[2], lazy=True)
+    return
+
+
+@app.cell
+def _(sta):
+    locals().update(sta.locals())
+    return
+
+
+@app.cell
 def _():
+    return
+
+
+@app.cell
+def _(b_sta):
+    b_sta()
     return
 
 

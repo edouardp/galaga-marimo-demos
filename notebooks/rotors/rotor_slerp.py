@@ -15,60 +15,6 @@ def _():
     return Algebra, exp, gm, log, mo, np, plt, sandwich
 
 
-@app.cell
-def _(np, plt):
-    def draw_slerp(v0, v1, vt, R0, R1, Rt):
-        fig, (ax_rot, ax_vec) = plt.subplots(1, 2, figsize=(10, 4.8))
-
-        R0_eval = R0.eval()
-        R1_eval = R1.eval()
-        Rt_eval = Rt.eval()
-        r0_xy = (R0_eval.data[0], R0_eval.data[3])
-        r1_xy = (R1_eval.data[0], R1_eval.data[3])
-        rt_xy = (Rt_eval.data[0], Rt_eval.data[3])
-
-        t = np.linspace(0, 2 * np.pi, 200)
-        ax_rot.plot(np.cos(t), np.sin(t), color="gray", alpha=0.25)
-        ax_rot.annotate("", xy=r0_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
-        ax_rot.annotate("", xy=r1_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="darkorange", lw=2))
-        ax_rot.annotate("", xy=rt_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
-        ax_rot.scatter([r0_xy[0], r1_xy[0], rt_xy[0]], [r0_xy[1], r1_xy[1], rt_xy[1]], color=["steelblue", "darkorange", "crimson"], zorder=3)
-        ax_rot.plot([], [], color="steelblue", label="R0")
-        ax_rot.plot([], [], color="darkorange", label="R1")
-        ax_rot.plot([], [], color="crimson", label="R(t)")
-        ax_rot.set_xlim(-1.15, 1.15)
-        ax_rot.set_ylim(-1.15, 1.15)
-        ax_rot.set_aspect("equal")
-        ax_rot.grid(True, alpha=0.25)
-        ax_rot.set_xlabel("scalar part")
-        ax_rot.set_ylabel("e12 part")
-        ax_rot.set_title("Rotor space")
-        ax_rot.legend(loc="upper left")
-
-        v0_xy = v0.vector_part[:2]
-        v1_xy = v1.vector_part[:2]
-        vt_xy = vt.vector_part[:2]
-        ax_vec.annotate("", xy=v0_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
-        ax_vec.annotate("", xy=v1_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="darkorange", lw=2))
-        ax_vec.annotate("", xy=vt_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
-        ax_vec.plot([], [], color="steelblue", label="R0 v R̃0")
-        ax_vec.plot([], [], color="darkorange", label="R1 v R̃1")
-        ax_vec.plot([], [], color="crimson", label="R(t) v R̃(t)")
-        ax_vec.set_xlim(-1.4, 1.4)
-        ax_vec.set_ylim(-1.4, 1.4)
-        ax_vec.set_aspect("equal")
-        ax_vec.grid(True, alpha=0.25)
-        ax_vec.set_xlabel("e1")
-        ax_vec.set_ylabel("e2")
-        ax_vec.set_title("Vector space")
-        ax_vec.legend(loc="upper left")
-
-        plt.close(fig)
-        return fig
-
-    return (draw_slerp,)
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -144,27 +90,31 @@ def _(
 ):
     theta0 = alg.scalar(np.radians(start_angle.value)).name(latex=r"\theta_0")
     theta1 = alg.scalar(np.radians(end_angle.value)).name(latex=r"\theta_1")
-    B = (e1 * e2).name("B")
+    t = alg.scalar(blend.value).name(latex="t")
+    half = alg.frac(1, 2)
+    B = (e1 * e2).name(latex="B")
 
-    R0 = exp(-B * theta0 / 2).name("R_0")
-    R1 = exp(-B * theta1 / 2).name("R_1")
-    Delta = (~R0 * R1).name(r"\Delta")
-    Rt = (R0 * exp(blend.value * log(Delta))).name("R(t)")
+    R0 = exp(-B * theta0 * half).name(latex="R_0")
+    R1 = exp(-B * theta1 * half).name(latex="R_1")
+    Delta = (~R0 * R1).name(latex=r"\Delta")
+    log_Delta = log(Delta).name(latex=r"\log(\Delta)")
+    Rt = (R0 * exp(t * log_Delta)).name(latex=r"R(t)")
 
-    v = e1.name("v")
-    v0 = sandwich(R0, v).name("v_0")
-    v1 = sandwich(R1, v).name("v_1")
-    vt = sandwich(Rt, v).name("v_t")
+    v = e1.name(latex="v")
+    v0 = sandwich(R0, v).name(latex=r"v_0")
+    v1 = sandwich(R1, v).name(latex=r"v_1")
+    vt = sandwich(Rt, v).name(latex=r"v_t")
 
     _md = t"""
-    {B.display()} $\\quad with \\quad$ {(B**2).display(compact=True)} <br/>
+    {B.display()} $\\quad$ with $\\quad$ {(B**2).display(compact=True)} <br/>
     {R0.display()} <br/>
     {R1.display()} <br/>
     {Delta.display()} <br/>
-    {log(Delta).display()} <br/>
+    {log_Delta.display()} <br/>
     {Rt.display()} <br/>
     {(Rt * ~Rt).display()} <br/>
-    $t = {blend.value:.2f}$ gives an interpolated rotation angle of about ${(1 - blend.value) * start_angle.value + blend.value * end_angle.value:.1f}^\\circ$
+    {t.display()} <br/>
+    $t = {blend.value:.2f}$ gives an interpolated rotation angle of about {(1 - blend.value) * start_angle.value + blend.value * end_angle.value:.1f}^\\circ
     """
 
     mo.vstack([start_angle, end_angle, blend, gm.md(_md), draw_slerp(v0, v1, vt, R0, R1, Rt)])
@@ -189,6 +139,68 @@ def _(mo):
     Slerp is a natural fit for geometric algebra: compute the relative rotor, take its logarithm, scale that generator, and exponentiate back. The interpolated rotor remains a true rotor the whole time, and the vector it acts on moves smoothly with it.
     """)
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(np, plt):
+    def draw_slerp(v0, v1, vt, R0, R1, Rt):
+        fig, (ax_rot, ax_vec) = plt.subplots(1, 2, figsize=(10, 4.8))
+
+        R0_eval = R0.eval()
+        R1_eval = R1.eval()
+        Rt_eval = Rt.eval()
+        r0_xy = (R0_eval.data[0], R0_eval.data[3])
+        r1_xy = (R1_eval.data[0], R1_eval.data[3])
+        rt_xy = (Rt_eval.data[0], Rt_eval.data[3])
+
+        t = np.linspace(0, 2 * np.pi, 200)
+        ax_rot.plot(np.cos(t), np.sin(t), color="gray", alpha=0.25)
+        ax_rot.annotate("", xy=r0_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
+        ax_rot.annotate("", xy=r1_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="darkorange", lw=2))
+        ax_rot.annotate("", xy=rt_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
+        ax_rot.scatter([r0_xy[0], r1_xy[0], rt_xy[0]], [r0_xy[1], r1_xy[1], rt_xy[1]], color=["steelblue", "darkorange", "crimson"], zorder=3)
+        ax_rot.plot([], [], color="steelblue", label="R0")
+        ax_rot.plot([], [], color="darkorange", label="R1")
+        ax_rot.plot([], [], color="crimson", label="R(t)")
+        ax_rot.set_xlim(-1.15, 1.15)
+        ax_rot.set_ylim(-1.15, 1.15)
+        ax_rot.set_aspect("equal")
+        ax_rot.grid(True, alpha=0.25)
+        ax_rot.set_xlabel("scalar part")
+        ax_rot.set_ylabel("e12 part")
+        ax_rot.set_title("Rotor space")
+        ax_rot.legend(loc="upper left")
+
+        v0_xy = v0.vector_part[:2]
+        v1_xy = v1.vector_part[:2]
+        vt_xy = vt.vector_part[:2]
+        ax_vec.annotate("", xy=v0_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
+        ax_vec.annotate("", xy=v1_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="darkorange", lw=2))
+        ax_vec.annotate("", xy=vt_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
+        ax_vec.plot([], [], color="steelblue", label="R0 v R̃0")
+        ax_vec.plot([], [], color="darkorange", label="R1 v R̃1")
+        ax_vec.plot([], [], color="crimson", label="R(t) v R̃(t)")
+        ax_vec.set_xlim(-1.4, 1.4)
+        ax_vec.set_ylim(-1.4, 1.4)
+        ax_vec.set_aspect("equal")
+        ax_vec.grid(True, alpha=0.25)
+        ax_vec.set_xlabel("e1")
+        ax_vec.set_ylabel("e2")
+        ax_vec.set_title("Vector space")
+        ax_vec.legend(loc="upper left")
+
+        plt.close(fig)
+        return fig
+
+    return (draw_slerp,)
 
 
 @app.cell

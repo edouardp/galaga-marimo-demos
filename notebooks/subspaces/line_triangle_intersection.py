@@ -16,51 +16,6 @@ def _():
     return Algebra, Poly3DCollection, dual, gm, mo, np, plt, unit
 
 
-@app.cell
-def _(Poly3DCollection, np, plt):
-    def draw_line_triangle(A, B, C, origin, direction, hit, hit_inside):
-        _A = A.vector_part[:3]
-        _B = B.vector_part[:3]
-        _C = C.vector_part[:3]
-        _origin = origin.vector_part[:3]
-        _direction = direction.vector_part[:3]
-        _hit = hit.vector_part[:3]
-
-        _fig = plt.figure(figsize=(7.2, 6.0))
-        _ax = _fig.add_subplot(111, projection="3d")
-
-        _tri = Poly3DCollection([[list(_A), list(_B), list(_C)]], alpha=0.28, facecolor="goldenrod", edgecolor="black")
-        _ax.add_collection3d(_tri)
-
-        _ray_len = 2.8
-        _ray_end = _origin + _ray_len * _direction
-        _ax.plot([_origin[0], _ray_end[0]], [_origin[1], _ray_end[1]], [_origin[2], _ray_end[2]], color="crimson", linewidth=2.5)
-        _ax.scatter([_origin[0]], [_origin[1]], [_origin[2]], color="crimson", s=50)
-
-        _color = "darkgreen" if hit_inside else "gray"
-        _ax.scatter([_hit[0]], [_hit[1]], [_hit[2]], color=_color, s=60)
-        _ax.text(_hit[0] + 0.05, _hit[1] + 0.05, _hit[2] + 0.05, "hit", color=_color)
-
-        for _label, _pt in zip(["A", "B", "C"], [_A, _B, _C]):
-            _ax.scatter([_pt[0]], [_pt[1]], [_pt[2]], color="black", s=35)
-            _ax.text(_pt[0] + 0.05, _pt[1] + 0.05, _pt[2] + 0.05, _label)
-
-        _all_pts = np.vstack([_A, _B, _C, _origin, _ray_end, _hit])
-        _mins = _all_pts.min(axis=0) - 0.3
-        _maxs = _all_pts.max(axis=0) + 0.3
-        _ax.set_xlim(_mins[0], _maxs[0])
-        _ax.set_ylim(_mins[1], _maxs[1])
-        _ax.set_zlim(min(-0.2, _mins[2]), max(1.8, _maxs[2]))
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_zlabel("e3")
-        _ax.set_title("Ray-triangle intersection in Cl(3,0)")
-        plt.close(_fig)
-        return _fig
-
-    return (draw_line_triangle,)
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -121,6 +76,7 @@ def _(mo):
 
 @app.cell
 def _(
+    alg,
     aim_x,
     aim_y,
     draw_line_triangle,
@@ -140,7 +96,7 @@ def _(
     _C = (-0.2 * e1 + 1.1 * e2).name("C")
 
     _origin = (origin_x.value * e1 + origin_y.value * e2 + 1.6 * e3).name("O")
-    _aim_point = (aim_x.value * e1 + aim_y.value * e2).name("P_{aim}")
+    _aim_point = (aim_x.value * e1 + aim_y.value * e2).name(latex=r"P_{\mathrm{aim}}")
     _direction = unit((_aim_point - _origin)).name("d")
 
     _triangle_plane = ((_B - _A) ^ (_C - _A)).name(latex=r"B_\triangle")
@@ -149,18 +105,19 @@ def _(
     _denom = (_direction | _normal).scalar_part
     _numer = ((_A - _origin) | _normal).scalar_part
     _t_value = _numer / _denom if abs(_denom) > 1e-9 else np.nan
+    _t = alg.scalar(_t_value).name("t")
     _hit = (_origin + _t_value * _direction).name("H")
 
     _area_total = (_triangle_plane | _triangle_plane).scalar_part
-    _alpha = (((_B - _hit) ^ (_C - _hit)) | _triangle_plane).scalar_part / _area_total
-    _beta = (((_C - _hit) ^ (_A - _hit)) | _triangle_plane).scalar_part / _area_total
-    _gamma = (((_A - _hit) ^ (_B - _hit)) | _triangle_plane).scalar_part / _area_total
+    _alpha = alg.scalar((((_B - _hit) ^ (_C - _hit)) | _triangle_plane).scalar_part / _area_total).name(latex=r"\alpha")
+    _beta = alg.scalar((((_C - _hit) ^ (_A - _hit)) | _triangle_plane).scalar_part / _area_total).name(latex=r"\beta")
+    _gamma = alg.scalar((((_A - _hit) ^ (_B - _hit)) | _triangle_plane).scalar_part / _area_total).name(latex=r"\gamma")
     _inside = bool(
         np.isfinite(_t_value)
         and _t_value >= 0.0
-        and _alpha >= -1e-9
-        and _beta >= -1e-9
-        and _gamma >= -1e-9
+        and _alpha.scalar_part >= -1e-9
+        and _beta.scalar_part >= -1e-9
+        and _gamma.scalar_part >= -1e-9
     )
     _status = "inside triangle" if _inside else "outside triangle"
 
@@ -169,12 +126,15 @@ def _(
     {_B.display()} <br/>
     {_C.display()} <br/>
     {_origin.display()} <br/>
+    {_aim_point.display()} <br/>
     {_direction.display()} <br/>
     {_triangle_plane.display()} <br/>
     {_normal.display()} <br/>
-    Ray parameter: $t = {_t_value:.3f}$ <br/>
+    {_t.display()} <br/>
     {_hit.display()} <br/>
-    Oriented-area barycentric weights: $({ _alpha:.3f}, { _beta:.3f}, { _gamma:.3f})$ <br/>
+    {_alpha.display()} <br/>
+    {_beta.display()} <br/>
+    {_gamma.display()} <br/>
     Classification: **{_status}**
     """
 
@@ -199,6 +159,59 @@ def _(mo):
     Nothing projective was needed here. In $\mathrm{Cl}(3,0)$, the triangle plane, the ray direction, and the oriented sub-areas already give a clean intersection test. PGA would make incidence more primary, but Euclidean GA is enough for the core computation.
     """)
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(Poly3DCollection, np, plt):
+    def draw_line_triangle(A, B, C, origin, direction, hit, hit_inside):
+        _A = A.vector_part[:3]
+        _B = B.vector_part[:3]
+        _C = C.vector_part[:3]
+        _origin = origin.vector_part[:3]
+        _direction = direction.vector_part[:3]
+        _hit = hit.vector_part[:3]
+
+        _fig = plt.figure(figsize=(7.2, 6.0))
+        _ax = _fig.add_subplot(111, projection="3d")
+
+        _tri = Poly3DCollection([[list(_A), list(_B), list(_C)]], alpha=0.28, facecolor="goldenrod", edgecolor="black")
+        _ax.add_collection3d(_tri)
+
+        _ray_len = 2.8
+        _ray_end = _origin + _ray_len * _direction
+        _ax.plot([_origin[0], _ray_end[0]], [_origin[1], _ray_end[1]], [_origin[2], _ray_end[2]], color="crimson", linewidth=2.5)
+        _ax.scatter([_origin[0]], [_origin[1]], [_origin[2]], color="crimson", s=50)
+
+        _color = "darkgreen" if hit_inside else "gray"
+        _ax.scatter([_hit[0]], [_hit[1]], [_hit[2]], color=_color, s=60)
+        _ax.text(_hit[0] + 0.05, _hit[1] + 0.05, _hit[2] + 0.05, "hit", color=_color)
+
+        for _label, _pt in zip(["A", "B", "C"], [_A, _B, _C]):
+            _ax.scatter([_pt[0]], [_pt[1]], [_pt[2]], color="black", s=35)
+            _ax.text(_pt[0] + 0.05, _pt[1] + 0.05, _pt[2] + 0.05, _label)
+
+        _all_pts = np.vstack([_A, _B, _C, _origin, _ray_end, _hit])
+        _mins = _all_pts.min(axis=0) - 0.3
+        _maxs = _all_pts.max(axis=0) + 0.3
+        _ax.set_xlim(_mins[0], _maxs[0])
+        _ax.set_ylim(_mins[1], _maxs[1])
+        _ax.set_zlim(min(-0.2, _mins[2]), max(1.8, _maxs[2]))
+        _ax.set_xlabel("e1")
+        _ax.set_ylabel("e2")
+        _ax.set_zlabel("e3")
+        _ax.set_title("Ray-triangle intersection in Cl(3,0)")
+        plt.close(_fig)
+        return _fig
+
+    return (draw_line_triangle,)
 
 
 @app.cell

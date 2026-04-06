@@ -164,147 +164,114 @@ The repo style is assumed throughout:
   Focus: magnetism emerging from a boosted pure electric field.
   Core claim: in the charge rest frame the field can be purely electric; in a lab frame the same boosted bivector develops a magnetic part.
 
-## Strong Next Candidates
+## Current Priority Roadmap
 
-### 1. Boosting the Electromagnetic Field
+Most of the earlier `next` candidates in this file have now been implemented.
+The strongest remaining additions are the places where GA gives a reader a real
+conceptual win rather than only a different notation.
 
-- `next`
-- Suggested path: `notebooks/sta/boosting_em_field.py`
+### Highest-Priority Next Notebooks
 
-Goal:
-- Show that a boost mixes electric and magnetic parts because the field is one bivector `F`.
-
-Core claim:
-- A pure electric or pure magnetic field in one frame need not stay pure under a boost.
-
-Algebra:
-- Use `Cl(1,3)` with `(+, -, -, -)`.
-- Build `F = E + I B`.
-- Choose a boost rotor `R = exp(-(φ/2) γ0 n)`.
-- Compute `F' = R F ~R`.
-- Extract `E' = F' | γ0`.
-- Extract `B'` by projecting `F'` onto the `Iσ_i` basis.
-
-Controls:
-- a few field components, not all six
-- one boost rapidity slider
-- one boost direction dropdown or simple plane choice
-
-Plot:
-- left: 3D lab-relative `E` and `B` arrows before/after
-- right: bivector basis coefficient bars before/after
-
-What to avoid:
-- a six-component control panel
-- too much derivation about Maxwell equations
-- mixing in Lorentz force; keep this notebook about field transformation only
-
-### 2. Lorentz Force from Bivector Action
+#### 1. Inertia Tensor as a Bivector-to-Bivector Map
 
 - `next`
-- Suggested path: `notebooks/sta/lorentz_force_from_F.py`
+- Suggested path: `notebooks/physics/inertia_tensor_bivector_map.py`
 
 Goal:
-- Show how the field bivector acts on particle velocity and why electric and magnetic responses feel different.
+- Show that inertia does not fundamentally map an “angular velocity vector” to an
+  “angular momentum vector.” It maps a bivector generator of rotation to a
+  bivector angular momentum.
 
 Core claim:
-- `F` acting on the particle state naturally separates into acceleration along `E` and turning by `B`.
-
-Algebra:
-- Start with one simple `F`
-- Use a particle four-velocity or relative velocity
-- Build a pedagogical force expression rather than a full integrator if needed
-
-Controls:
-- magnetic field along one axis
-- optional electric field along another
-- initial velocity direction
+- The inertia tensor is clearer when treated as a linear map on rotational plane
+  elements.
 
 Plot:
-- velocity-space curve or qualitative trajectory
-- maybe a companion panel for `E`, `B`, and `v`
+- body shape or mass-point configuration
+- one chosen rotation plane
+- input angular-velocity bivector coefficients vs output angular-momentum
+  bivector coefficients
 
 What to avoid:
-- too much numerical ODE machinery unless it directly supports the teaching goal
+- a full rigid-body simulation on the first pass
+- too much matrix language too early
 
-### 3. Electromagnetic Invariants
+#### 2. Rotating Frames: Coriolis and Centrifugal Terms
 
 - `next`
-- Suggested path: `notebooks/sta/em_invariants.py`
+- Suggested path: `notebooks/physics/rotating_frames_ga.py`
 
 Goal:
-- Center a notebook on `F²` and what its scalar and pseudoscalar parts mean.
+- Derive the familiar fictitious forces from a rotor-driven moving frame.
 
 Core claim:
-- The invariant content of the field is cleaner in STA than in separate vector formulas.
-
-Algebra:
-- Compute `F²`
-- Show `⟨F²⟩0`
-- Show `⟨F²⟩4`
-- Explain electric-dominated vs magnetic-dominated vs null field cases
-
-Controls:
-- two or three field components only
+- Coriolis and centrifugal terms are not arbitrary corrections; they come from
+  differentiating in a rotating frame, and the commutator structure is visible in
+  GA.
 
 Plot:
-- coefficient bars and a small classification panel
+- particle trajectory in inertial vs rotating frames
+- force-term bars or vector overlays
 
 What to avoid:
-- treating this as just a symbolic printout; the classification should be obvious
+- too much mechanics notation at once
 
-### 4. Barycentric Coordinates from Oriented Areas
+#### 3. Vector Derivative Sequel in 3D / STA
 
 - `next`
-- Suggested path: `notebooks/subspaces/barycentric_from_areas.py`
+- Suggested path: `notebooks/sta/vector_derivative_in_sta.py`
 
 Goal:
-- Make the inside-triangle test and barycentric coordinates their own notebook.
+- Follow the 2D operator-routing notebook with a version where the derivative is
+  clearly the same object behind grad, div, curl, and the STA Maxwell equation.
 
 Core claim:
-- Barycentric weights are oriented area ratios, so “inside/outside” is a geometric sign test, not an arbitrary algorithm.
-
-Algebra:
-- Stay in `Cl(3,0)` or even a 2D Euclidean setup embedded in 3D
-- Triangle area from wedge of edge vectors
-- Subtriangle areas from wedges against a point
-- Normalize by total area
-
-Controls:
-- one point inside/near triangle
-- maybe a small triangle-shape deformation slider
+- The vector derivative is one geometric object whose grade channels recover the
+  standard differential operators.
 
 Plot:
-- triangle, point, subareas shaded by weight or sign
+- one scalar field and one vector field in 3D slices
+- grade-channel readout for `∇v`
 
 What to avoid:
-- burying the idea inside line-triangle intersection logic
+- turning the first sequel into a full PDE notebook
 
-### 5. Reflection and Refraction from Surface Geometry
+#### 4. Rotor Blending Beyond Two Orientations
+
+- `next`
+- Suggested path: `notebooks/rotors/multi_rotor_blending.py`
+
+Goal:
+- Extend slerp to a weighted blend of several orientations.
+
+Core claim:
+- Rotor logarithms make multi-orientation blending geometrically coherent in a
+  way that ad hoc coefficient interpolation is not.
+
+Plot:
+- a few key orientations on the sphere
+- blended result under changing weights
+
+What to avoid:
+- jumping immediately to skinning jargon without first making the geometry clear
+
+#### 5. Reflection and Refraction from Subspace Geometry
 
 - `next`
 - Suggested path: `notebooks/subspaces/reflection_refraction.py`
 
 Goal:
-- Use surface normals and decomposition into parallel/perpendicular parts to derive reflection and maybe simple refraction.
+- Use decomposition relative to a surface normal to derive reflection and simple
+  refraction.
 
 Core claim:
-- surface response is just subspace decomposition plus one geometric rule
-
-Algebra:
-- decompose incident direction relative to a normal
-- reflection by flipping the normal component
-- optional Snell law extension for refraction
-
-Controls:
-- incident angle
-- refractive index ratio if refraction is included
+- surface response is subspace decomposition plus one propagation rule
 
 Plot:
-- surface line/plane, incident ray, reflected ray, refracted ray
+- surface line, incident ray, reflected ray, refracted ray
 
 What to avoid:
-- overcomplicating with Fresnel coefficients unless the notebook is explicitly about that
+- mixing in Fresnel amplitudes here; keep this notebook geometric
 
 ## Backlog: Good Geometry Topics
 
@@ -347,29 +314,6 @@ Plot:
 
 ## Backlog: Further STA / Physics Topics
 
-### Maxwell as One STA Equation
-
-- `backlog`
-
-Goal:
-- show the compact STA Maxwell equation as the unification of the usual four equations
-
-Core claim:
-- one STA equation packages divergence and curl structure together
-
-Warning:
-- keep this concept-first; do not turn it into a full EM course notebook
-
-### Electromagnetic Waves in STA
-
-- `backlog`
-
-Goal:
-- plane-wave field as a null or constrained bivector field
-
-Core claim:
-- propagation and orthogonality are cleaner in STA field language
-
 ### Stress-Energy / Momentum Flow in EM
 
 - `backlog`
@@ -380,33 +324,66 @@ Goal:
 Core claim:
 - STA can express field structure and field transport in one language
 
-### Dirac Matrices vs STA
+### Observer Dependence of Event Order from a Calculus View
 
 - `backlog`
 
 Goal:
-- side-by-side notebook comparing matrix and STA descriptions
+- follow the existing event-order notebook with one that ties the ordering issue
+  to spacetime foliations and observer-relative time functions
 
 Core claim:
-- the matrix language can be re-read as geometry
+- “which event is first?” is not a raw spacetime fact for spacelike separation;
+  it depends on the observer’s chosen timelike direction field
+
+### Null Congruences and Real Twistor Precursors
+
+- `backlog`
+
+Goal:
+- continue the conformal STA / null-geometry strand toward families of null rays
+  rather than one ray at a time
+
+Core claim:
+- the right precursor to twistors is not complex machinery first, but the real
+  incidence geometry of null directions, celestial spheres, and congruences
+
+### Dirac Matrices vs STA Extensions
+
+- `backlog`
+
+Goal:
+- continue the existing matrix-vs-STA notebook family with one narrow sequel
+
+Core claim:
+- once one comparison is understood, many matrix identities become geometric
+  statements about multivectors and operators
 
 Warning:
 - keep the scope tight; compare one or two ideas, not all of Dirac theory
 
 ## Backlog: PGA Topics
 
-### Motors in PGA
+### Camera Geometry in PGA
 
 - `backlog`
 
 Goal:
-- show translations and rotations unified as motors
+- show how rays from a scene point pass through a pinhole to an image plane
 
 Core claim:
-- rigid motions in Euclidean space are one motor story in PGA
+- PGA makes incidence primary in camera geometry: scene point, pinhole, and image
+  point are linked by one projective line story
 
-Plot:
-- simple shape moved by translation, rotation, then a motor
+### Robot / Linkage Kinematics in PGA
+
+- `backlog`
+
+Goal:
+- extend the rigid-motion strand into articulated mechanisms
+
+Core claim:
+- links, joints, and rigid motions are naturally projective / motor geometry
 
 ### Line / Plane Incidence in PGA
 
@@ -615,6 +592,60 @@ Goal:
 
 Core claim:
 - many “different” GA objects are representation changes around the same geometry
+
+## Backlog: New High-Value Topic Families
+
+These are the newer gaps that look especially strong now that the repo has a
+much broader base.
+
+### Mechanics and Dynamics
+
+- `backlog` `notebooks/physics/precession_and_nutation_ga.py`
+  Focus: rotor-driven rigid-body precession and nutation.
+  Core claim: the evolving rotor and its bivector generator carry the dynamics
+  more cleanly than Euler-angle bookkeeping.
+
+- `backlog` `notebooks/physics/action_angle_geometry.py`
+  Focus: orbital / rotational phase geometry.
+  Core claim: GA can package angle, plane, and conserved geometric structure in
+  one language.
+
+### Electromagnetism and Gauge Structure
+
+- `backlog` `notebooks/quantum/gauge_phase_vs_holonomy.py`
+  Focus: local phase changes vs gauge-invariant loop phase.
+  Core claim: Aharonov-Bohm is the cleanest physical reminder that local
+  potentials and closed-loop holonomy play different roles.
+
+- `backlog` `notebooks/sta/maxwell_from_calculus_side.py`
+  Focus: derive the Maxwell split from the derivative operator itself.
+  Core claim: the one-line Maxwell equation is persuasive only if the reader sees
+  how the derivative operator packages the standard pieces.
+
+### Quantum and Information
+
+- `backlog` `notebooks/quantum/entanglement_as_geometric_correlation.py`
+  Focus: entanglement framed as constrained joint geometry rather than spooky
+  matrix data.
+  Core claim: some entangled structure is best understood as relational geometry
+  between measurement contexts.
+
+- `backlog` `notebooks/quantum/two_qubit_geometry_intro.py`
+  Focus: first honest step beyond the single-qubit Bloch picture.
+  Core claim: the jump from one qubit to two is not “just a bigger Bloch sphere,”
+  and GA can help organize what changes.
+
+### Algebra and Representation Theory
+
+- `backlog` `notebooks/grade/clifford_group_intro.py`
+  Focus: Pin, Spin, versors, and the Clifford group in one explicit map.
+  Core claim: the algebra is not just a bag of products; it has a transformation
+  group structure generated by reflections.
+
+- `backlog` `notebooks/grade/blade_naming_and_notation_as_pedagogy.py`
+  Focus: how notation changes what the reader sees.
+  Core claim: basis naming, dual conventions, and blade factories are not cosmetic
+  in a teaching repo; they shape the conceptual layer directly.
 
 ## Guidance for Implementing Any of These
 

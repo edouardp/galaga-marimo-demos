@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.22.0"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -13,27 +13,24 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
 
-    return Algebra, gm, grade, mo, np, plt
+    return Algebra, b_sta, gm, grade, mo, np, plt
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     # Electromagnetic Waves in STA
 
     A vacuum plane wave is one of the cleanest spacetime-algebra field examples.
     The electric and magnetic fields still split relative to an observer, but
     together they form one null bivector field.
-    """
-    )
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     We use the spacetime algebra $\mathrm{Cl}(1,3)$ with signature $(+,-,-,-)$.
 
     Relative to the observer $\gamma_0$, the spatial relative vectors are
@@ -44,28 +41,24 @@ def _(mo):
 
     In this notebook the wave propagates along $\sigma_3$, with electric field
     along $\sigma_1$ and magnetic field along $\sigma_2$.
-    """
-    )
+    """)
     return
 
 
 @app.cell
-def _(Algebra):
-    from galaga.blade_convention import b_sta
-
+def _(Algebra, b_sta):
     sta = Algebra((1, -1, -1, -1), blades=b_sta())
     g0, g1, g2, g3 = sta.basis_vectors(lazy=True)
     I = sta.I.name("I")
     s1 = (g1 * g0).name(latex=r"\sigma_1")
     s2 = (g2 * g0).name(latex=r"\sigma_2")
     s3 = (g3 * g0).name(latex=r"\sigma_3")
-    return I, g0, g1, g2, g3, s1, s2, s3, sta
+    return I, s1, s2, s3
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     ## One Null Field
 
     A vacuum plane wave satisfies:
@@ -75,8 +68,7 @@ def _(mo):
     - both field invariants vanish
 
     So the wave is a null electromagnetic field in STA.
-    """
-    )
+    """)
     return
 
 
@@ -88,19 +80,7 @@ def _(mo):
 
 
 @app.cell
-def _(
-    I,
-    amplitude,
-    draw_em_wave,
-    gm,
-    grade,
-    mo,
-    np,
-    phase,
-    s1,
-    s2,
-    s3,
-):
+def _(I, amplitude, draw_em_wave, gm, grade, mo, np, phase, s1, s2, s3):
     _amp = amplitude.value * np.cos(phase.value)
     _E = (_amp * s1).name("E")
     _B = (_amp * s2).name("B")
@@ -127,25 +107,21 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     ## Key Point
 
     For a vacuum plane wave, the Faraday bivector is not just “an electric field
     plus a magnetic field.” It is one null bivector whose observer-relative split
     happens to have orthogonal electric and magnetic parts of equal size.
-    """
-    )
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     ## Appendum: Plotting Code
-    """
-    )
+    """)
     return
 
 

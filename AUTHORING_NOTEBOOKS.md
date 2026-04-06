@@ -46,6 +46,322 @@ def _(mo):
 
 Plot helpers should accept GA objects directly. They should do their own unpacking internally.
 
+## Choose a Blade Convention at Algebra Construction Time
+
+Meaningful basis names are part of the teaching surface.
+
+Do not default to whatever unnamed basis happens to come out of `Algebra(...)`
+if the notebook is about a specific algebra tradition or notation.
+
+Prefer choosing the blade convention when constructing the algebra:
+
+```python
+from galaga import Algebra
+from galaga.blade_convention import (
+    b_default,
+    b_gamma,
+    b_pga,
+    b_sta,
+    b_cga,
+)
+
+alg = Algebra((1, 1, 1), blades=b_default())
+sta = Algebra((1, -1, -1, -1), blades=b_sta())
+pga = Algebra((1, 1, 1, 0), blades=b_pga())
+cga = Algebra(4, 1, blades=b_cga())
+```
+
+This is better than renaming individual basis vectors later unless you need a
+very small local override.
+
+### Built-in conventions to prefer
+
+Use these first:
+
+- `b_default()` for ordinary Euclidean/vector GA notebooks
+- `b_gamma()` when the notebook is about gamma-vector notation
+- `b_pga()` for projective geometry notebooks
+- `b_sta()` for spacetime algebra notebooks
+- `b_cga()` for conformal GA notebooks
+
+These factories exist so the notebook starts with the right naming language.
+
+### Practical defaults by topic
+
+Use:
+
+- `Algebra((1, 1), blades=b_default())` for early 2D Euclidean notebooks
+- `Algebra((1, 1, 1), blades=b_default(overrides={"pss": "I"}))` when a named Euclidean pseudoscalar helps
+- `Algebra((1, -1, -1, -1), blades=b_sta())` for standard STA notebooks
+- `Algebra((1, -1, -1, -1), blades=b_sta(sigmas=True))` when observer-relative `σ_k` notation is pedagogically central
+- `Algebra((1, 1, 1, 0), blades=b_pga())` for 2D PGA notebooks
+- `Algebra(3, 1, blades=b_cga(euclidean=2))` for 2D CGA
+- `Algebra(4, 1, blades=b_cga())` for 3D CGA
+
+### Style matters
+
+Blade naming style is a teaching decision too:
+
+- `style="compact"`: `e₁₂`
+- `style="juxtapose"`: `e₁e₂`
+- `style="wedge"`: `e₁∧e₂`
+
+Use:
+
+- `compact` when you want concise basis-blade notation
+- `juxtapose` when you want product structure to stay visible
+- `wedge` when the notebook is emphasizing exterior / subspace meaning
+
+Examples:
+
+```python
+Algebra(3, blades=b_default(style="compact"))      # e₁₂
+Algebra(3, blades=b_default(style="juxtapose"))    # e₁e₂
+Algebra(3, blades=b_default(style="wedge"))        # e₁∧e₂
+Algebra(1, 3, blades=b_gamma())                    # γ₀γ₁
+Algebra(1, 3, blades=b_gamma(style="compact"))     # γ₀₁
+```
+
+### Use the factory features instead of manual renaming when possible
+
+Examples:
+
+```python
+Algebra(3, blades=b_default(prefix="v", style="compact"))   # v₁, v₂, v₃ and v₁₂
+Algebra(3, 0, 1, blades=b_pga(pseudoscalar="I"))            # PGA with I
+Algebra(4, 1, blades=b_cga(null_basis="plus_minus"))        # e₊, e₋ basis
+Algebra(1, 3, blades=b_sta(sigmas=True))                    # σ₁, σ₂, σ₃ aliases
+```
+
+This gives better teaching results than retrofitting names later.
+
+### Prefer `basis_blades(...)`, `locals(...)`, and `blade(...)` Over Manual Basis-Blade Rebuilding
+
+As of `galaga 1.0.2+`, `Algebra` has notebook-friendly helpers for getting
+named basis blades directly.
+
+Prefer these over manually rebuilding basis blades with expressions like:
+
+```python
+e12 = (e1 * e2).name(latex=r"e_{12}")
+```
+
+unless the notebook is specifically teaching that construction.
+
+Preferred patterns:
+
+If the notebook only needs basis vectors, prefer the simplest form:
+
+```python
+e1, e2, e3 = alg.basis_vectors(lazy=True)
+```
+
+If the notebook also needs named bivectors, then use one of these:
+
+```python
+e12, e13, e23 = alg.basis_blades(2, lazy=True)
+```
+
+```python
+_basis = alg.locals(grades=[1, 2], lazy=True)
+locals().update(_basis)
+print("Injected:", ", ".join(_basis))
+```
+
+```python
+e12 = alg.blade("e12")
+gamma12 = sta.blade("γ12")
+```
+
+Use:
+
+- `basis_vectors(...)` by default when only basis vectors are needed
+- `basis_blades(k, ...)` when the notebook needs standard named higher-grade blades as variables
+- `locals(...)` when the notebook benefits from many basis blades being available directly and the local namespace will still stay readable
+- `blade("name")` when you want one specific named blade that matches the chosen convention
+
+Use manual products like
+
+```python
+B = e1 * e2
+```
+
+or
+
+```python
+B = e1 ^ e2
+```
+
+only when the notebook is actually teaching:
+
+- the geometric product relation between basis vectors and bivectors
+- the wedge construction of a plane element
+- a sign/orientation point that depends on the written product order
+
+If the blade is just a standard basis object needed for later work, prefer the
+constructor helpers.
+
+`basis_blades(2)` returns the canonical basis order. In `Cl(3,0)`, that is:
+
+```python
+e12, e13, e23 = alg.basis_blades(2, lazy=True)
+```
+
+Prefer canonical names like `e13` over ad hoc alternatives like `e31` unless
+the notebook is explicitly about orientation/sign.
+
+If a notebook really needs the opposite orientation, express that honestly:
+
+```python
+e31 = -e13
+```
+
+### When to use CGA naming modes
+
+For CGA there are two useful null-basis styles:
+
+- `b_cga()`:
+  uses `eₒ, e∞`
+- `b_cga(null_basis="plus_minus")`:
+  uses `e₊, e₋`
+
+Pedagogical guidance:
+
+- use `eₒ, e∞` when the notebook is about lifted points, infinity, distance, circles, spheres, incidence
+- use `e₊, e₋` when you want to build the null basis explicitly from an orthogonal `(+,-)` pair
+
+This repo often benefits from the second choice in early CGA notebooks, because
+it lets the notebook show the null directions being constructed rather than
+presenting them as magic primitives.
+
+### STA-specific naming guidance
+
+For STA notebooks:
+
+- use `b_sta()` when the notebook is about spacetime vectors, boosts, fields, and rotors in spacetime
+- use `b_sta(sigmas=True)` only when the notebook explicitly needs the observer-relative Pauli-style `σ_k` layer
+- use `b_sta(pseudovectors=True)` only when trivector names like `iγ_k` are part of the lesson
+
+Do not turn on `sigmas=True` just because it is available. It changes the visible
+notation and should only be used when it actually helps the student.
+
+### PGA and CGA should normally use their dedicated factories
+
+Do not hand-roll PGA or CGA naming with `b_default(...)` unless there is a very
+specific reason.
+
+Use:
+
+```python
+Algebra((1, 1, 1, 0), blades=b_pga())
+Algebra(4, 1, blades=b_cga())
+```
+
+Those factories already encode the standard naming choices:
+
+- PGA: `e₀, e₁, ...`, pseudoscalar `I`
+- CGA: `e₁, ..., eₒ, e∞` or `e₊, e₋`, pseudoscalar `I`
+
+### Overrides are useful for concept notebooks
+
+Use blade overrides when the notebook’s main idea is easier to read through a
+named generator or pseudoscalar.
+
+Examples:
+
+```python
+Algebra(3, blades=b_default(overrides={"pss": "I"}))
+Algebra(3, blades=b_default(overrides={"+1+2": "B", "pss": "I"}))
+Algebra(1, 3, blades=b_sta(overrides={
+    "+1-1": ("s1", "σ₁", r"\sigma_1"),
+    "pss": ("i", "i", "i"),
+}))
+```
+
+Use overrides sparingly. They are good when they make the notebook’s central
+objects easier to recognize, but too many overrides can make the basis feel
+custom and unmoored.
+
+### Do not swap conventions after construction
+
+If the notebook needs a different naming system, create a new algebra instead of
+trying to mutate the whole convention later.
+
+Good:
+
+```python
+sta_plain = Algebra((1, -1, -1, -1), blades=b_sta())
+sta_sigma = Algebra((1, -1, -1, -1), blades=b_sta(sigmas=True))
+```
+
+Avoid:
+
+- constructing one algebra and then trying to globally reinterpret all basis names later
+
+Use post-hoc renaming only for small local fixes.
+
+### Post-hoc renaming is a surgical tool, not the default workflow
+
+If one blade needs a better teaching name, use `get_basis_blade(...).rename(...)`.
+
+Examples:
+
+```python
+alg.get_basis_blade("pss").rename("I")
+alg.get_basis_blade("+1+2").rename("B")
+alg.get_basis_blade("+1-1").rename(("s1", "σ₁", r"\sigma_1"))
+```
+
+But prefer construction-time conventions and overrides first.
+
+### Signed blade aliases matter
+
+Some named blades, especially in STA, correspond to products whose natural sign
+does not match the canonical sorted basis blade.
+
+Example:
+
+- `σ₁ = γ₁γ₀`
+- but the canonical basis blade is `γ₀γ₁ = -σ₁`
+
+The factory helpers handle this correctly.
+
+Do not try to recreate `σ_k` naming manually by renaming `γ₀γ_k` after the fact
+unless you also know how to handle the sign convention.
+
+### Blade lookup and notebook consistency
+
+With conventions active, `blade("name")` lookup follows the chosen naming scheme.
+
+That means if the notebook uses a convention, examples and helper code should use
+the same names the reader sees.
+
+Good:
+
+```python
+sta = Algebra((1, -1, -1, -1), blades=b_sta(sigmas=True))
+sta.blade("σ₁")
+sta.blade("pss")
+```
+
+Also good:
+
+```python
+e12 = alg.blade("e12")
+e12, e13, e23 = alg.basis_blades(2, lazy=True)
+_basis = alg.locals(grades=[1, 2], lazy=True)
+locals().update(_basis)
+print("Injected:", ", ".join(_basis))
+```
+
+Less good unless the construction itself is being taught:
+
+```python
+e12 = (e1 * e2).name(latex=r"e_{12}")
+```
+
+Avoid mixing displayed names and internal names in ways the reader cannot see.
+
 ## Main Cell vs Appendix
 
 Main cells should:
@@ -375,6 +691,8 @@ If you are unsure, follow these defaults:
 - Use `alg.frac(...)` for simple exact fractions.
 - Use `alg.scalar(...)` for meaningful non-fraction scalars.
 - Use `sqrt(...)` as the default algebraic square root.
+- Prefer `basis_blades(...)`, `locals(...)`, and `blade(...)` for standard named basis blades.
+- Only build basis blades manually when the notebook is teaching that construction or sign/orientation issue.
 - Name conceptual milestones, not every temporary.
 - Use `.display()` inside `gm.md(t"""...""")` for the visible math.
 - Move coefficient extraction and `numpy` conversion into the appendix plotting helpers.

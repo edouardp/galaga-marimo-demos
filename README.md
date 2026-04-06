@@ -17,12 +17,19 @@ A good notebook in this repo should do three things at once:
 
 The notebooks should feel like teaching artifacts, not library showcases.
 
+For notebook-authoring guidance aimed at coding assistants and contributors,
+see:
+
+- `AUTHORING_NOTEBOOKS.md`
+
 ## Scope
 
 The repo currently focuses on:
 
 - Euclidean rotor intuition
 - spacetime algebra and boosts
+- conformal geometric algebra in 2D and 3D
+- conformal spacetime as a bridge toward null and twistor-adjacent geometry
 - rotor interpolation
 - geometric projectors
 - short, interactive derivations
@@ -171,6 +178,30 @@ e1, e2 = alg.basis_vectors(lazy=True)
 return alg, e1, e2
 ```
 
+When the notebook is about a standard algebra family or notation, choose a
+teaching-friendly blade convention at construction time.
+
+Examples:
+
+```python
+from galaga.blade_convention import b_default, b_pga, b_sta, b_cga
+
+alg = Algebra((1, 1), blades=b_default())
+pga = Algebra((1, 1, 1, 0), blades=b_pga())
+sta = Algebra((1, -1, -1, -1), blades=b_sta())
+cga = Algebra(4, 1, blades=b_cga())
+```
+
+Use:
+
+- `b_default()` for ordinary Euclidean notebooks
+- `b_pga()` for projective geometry notebooks
+- `b_sta()` for spacetime algebra notebooks
+- `b_cga()` for conformal GA notebooks
+
+Do not hand-roll basis naming later if the notebook can start with the right
+notation from the beginning.
+
 ### 5. Explanatory markdown cells
 
 Use short `@app.cell(hide_code=True)` markdown cells to introduce each section.
@@ -258,6 +289,179 @@ Examples:
 - sandwich product: the action
 
 ### Minimal necessary math
+
+## Current Notebook Families
+
+The repo is now broad enough that notebooks should usually be thought of in
+families rather than as isolated files.
+
+### Rotor and Euclidean GA strand
+
+Representative files:
+
+- `notebooks/rotors/reflections_ga.py`
+- `notebooks/rotors/versor_composition.py`
+- `notebooks/rotors/rotor_space.py`
+- `notebooks/rotors/rotor_slerp.py`
+- `notebooks/rotors/rotor_slerp_3d.py`
+- `notebooks/rotors/one_sided_rotor_action.py`
+
+This strand is about:
+
+- reflections
+- versors and rotors
+- rotor interpolation
+- what sandwiching is really doing
+
+### Grade and algebra-mechanics strand
+
+Representative files:
+
+- `notebooks/grade/grade_and_dimension.py`
+- `notebooks/grade/involutions_and_grade_ops.py`
+- `notebooks/grade/inner_product_polarization.py`
+- `notebooks/grade/inner_left_right_contractions.py`
+- `notebooks/grade/inner_product_family.py`
+- `notebooks/grade/commutator_lie_jordan.py`
+
+This strand is about:
+
+- grade structure
+- algebraic product families
+- scalar / bivector routing
+- Lie vs Jordan structure
+
+### Subspace and incidence strand
+
+Representative files:
+
+- `notebooks/subspaces/subspace_actions.py`
+- `notebooks/subspaces/duality_and_complements.py`
+- `notebooks/subspaces/line_triangle_intersection.py`
+- `notebooks/subspaces/barycentric_from_areas.py`
+- `notebooks/subspaces/polygon_area_bivectors.py`
+
+This strand is about:
+
+- projection / rejection / reflection
+- duality and complements
+- incidence and intersection
+- oriented areas and polygon geometry
+
+### PGA strand
+
+Representative files:
+
+- `notebooks/pga/meets_joins_pga.py`
+- `notebooks/pga/meet_join_duality.py`
+- `notebooks/pga/screw_motion_pga.py`
+
+This strand is about:
+
+- joins and incidence
+- duality in projective geometry
+- rigid motions and screw motions in PGA
+
+### Quantum and spin strand
+
+Representative files:
+
+- `notebooks/quantum/stern_gerlach_intro.py`
+- `notebooks/quantum/stern_gerlach_sequence.py`
+- `notebooks/quantum/spinor_double_cover.py`
+- `notebooks/quantum/spinor_sign_interferometer.py`
+- `notebooks/quantum/exchange_symmetry_pauli.py`
+- `notebooks/quantum/pauli_matrices_vs_ga.py`
+
+This strand is about:
+
+- Bloch-vector intuition
+- spin measurement
+- double cover and spinor sign
+- exchange symmetry and exclusion
+- matrix vs GA descriptions
+
+### STA and relativistic physics strand
+
+Representative files:
+
+- `notebooks/sta/lorentz_boost.py`
+- `notebooks/sta/one_g_travel.py`
+- `notebooks/sta/electromagnetism_one_bivector.py`
+- `notebooks/sta/em_waves_sta.py`
+- `notebooks/sta/maxwell_equations_sta.py`
+- `notebooks/sta/dirac_matrices_vs_sta.py`
+
+This strand is about:
+
+- boosts and rapidity
+- STA fields and invariants
+- electromagnetic waves and Maxwell
+- Dirac/STA comparisons
+
+### CGA strand
+
+Representative files:
+
+- `notebooks/cga/cga_2d_null_basis.py`
+- `notebooks/cga/cga_2d_points_and_distance.py`
+- `notebooks/cga/cga_2d_lines_and_circles.py`
+- `notebooks/cga/cga_2d_up_and_down.py`
+- `notebooks/cga/cga_2d_point_pairs_and_intersections.py`
+- `notebooks/cga/cga_2d_translations.py`
+- `notebooks/cga/cga_2d_rigid_motions.py`
+- `notebooks/cga/cga_3d_spheres_and_planes.py`
+
+This strand is about:
+
+- conformal lifts
+- distance in the conformal inner product
+- lines, circles, spheres, and planes
+- point pairs and intersections
+- conformal translations and rigid motions
+
+Suggested reading order:
+
+1. `notebooks/cga/cga_2d_null_basis.py`
+2. `notebooks/cga/cga_2d_points_and_distance.py`
+3. `notebooks/cga/cga_2d_up_and_down.py`
+4. `notebooks/cga/cga_2d_lines_and_circles.py`
+5. `notebooks/cga/cga_2d_point_pairs_and_intersections.py`
+6. `notebooks/cga/cga_2d_point_pair_splitting.py`
+7. `notebooks/cga/cga_2d_translations.py`
+8. `notebooks/cga/cga_2d_rigid_motions.py`
+9. `notebooks/cga/cga_2d_inversion_in_circle.py`
+10. `notebooks/cga/cga_3d_spheres_and_planes.py`
+
+### Conformal STA and Twistor-Precursor strand
+
+Representative files:
+
+- `notebooks/sta/conformal_null_rays.py`
+- `notebooks/sta/conformal_translations_sta.py`
+- `notebooks/sta/conformal_null_infinity.py`
+- `notebooks/sta/celestial_circle_at_event.py`
+- `notebooks/sta/null_directions_celestial_sphere.py`
+
+This strand is about:
+
+- conformal spacetime null rays
+- translations as conformal versor actions
+- null infinity
+- celestial spheres / circles at events
+- the real geometric ingredients that later point toward twistor theory
+
+Suggested reading order:
+
+1. `notebooks/sta/null_directions_celestial_sphere.py`
+2. `notebooks/sta/conformal_null_rays.py`
+3. `notebooks/sta/conformal_translations_sta.py`
+4. `notebooks/sta/conformal_null_infinity.py`
+5. `notebooks/sta/celestial_circle_at_event.py`
+
+These notebooks are intentionally real and geometric first. They are not a full
+twistor-theory sequence; they are a conformal/null-geometry on-ramp that points
+toward the incidence structures twistor theory later organizes.
 
 Only include the math needed to support the visual/computational story.
 

@@ -17,23 +17,6 @@ def _():
     return Algebra, exp, gm, mo, np, plt
 
 
-@app.cell
-def _(plt):
-    def draw_rotation(v, vp):
-        v_xy = v.vector_part[:2].tolist()
-        vp_xy = vp.vector_part[:2].tolist()
-        fig, ax = plt.subplots(figsize=(4, 4))
-        ax.annotate('', xy=v_xy, xytext=(0,0), arrowprops=dict(arrowstyle='->', color='blue', lw=2))
-        ax.annotate('', xy=vp_xy, xytext=(0,0), arrowprops=dict(arrowstyle='->', color='red', lw=2))
-        ax.plot([], [], color='blue', label='v'); ax.plot([], [], color='red', label="v'")
-        ax.set_xlim(-1.8, 1.8); ax.set_ylim(-1.8, 1.8)
-        ax.set_aspect('equal'); ax.grid(True); ax.legend()
-        ax.set_title('Rotation'); plt.close(fig)
-        return fig
-
-    return (draw_rotation,)
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -82,10 +65,11 @@ def _(mo):
 @app.cell
 def _(alg, draw_rotation, e1, e2, exp, gm, mo, np, theta_slider):
     theta = alg.scalar(np.radians(theta_slider.value)).name(latex=r"\theta")
-    B = (e1^e2).name("B")
-    R = exp(-B * theta/2).name("R")
-    v = (e1+e2).name("v")
-    vp = (R * v * ~R).name("v'")
+    half = alg.frac(1, 2)
+    B = (e1 ^ e2).name(latex="B")
+    R = exp(-B * theta * half).name(latex="R")
+    v = (e1 + e2).name(latex="v")
+    vp = (R * v * ~R).name(latex=r"v'")
 
     _md = t"""
     {theta.display()} radians $\\quad = \\quad {theta_slider.value}\\degree$ <br/>
@@ -97,6 +81,36 @@ def _(alg, draw_rotation, e1, e2, exp, gm, mo, np, theta_slider):
 
     mo.vstack([theta_slider, gm.md(_md), draw_rotation(v, vp)])
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(plt):
+    def draw_rotation(v, vp):
+        _v_xy = v.vector_part[:2].tolist()
+        _vp_xy = vp.vector_part[:2].tolist()
+        _fig, _ax = plt.subplots(figsize=(4, 4))
+        _ax.annotate('', xy=_v_xy, xytext=(0, 0), arrowprops=dict(arrowstyle='->', color='blue', lw=2))
+        _ax.annotate('', xy=_vp_xy, xytext=(0, 0), arrowprops=dict(arrowstyle='->', color='red', lw=2))
+        _ax.plot([], [], color='blue', label='v')
+        _ax.plot([], [], color='red', label="v'")
+        _ax.set_xlim(-1.8, 1.8)
+        _ax.set_ylim(-1.8, 1.8)
+        _ax.set_aspect('equal')
+        _ax.grid(True)
+        _ax.legend()
+        _ax.set_title('Rotation')
+        plt.close(_fig)
+        return _fig
+
+    return (draw_rotation,)
 
 
 @app.cell

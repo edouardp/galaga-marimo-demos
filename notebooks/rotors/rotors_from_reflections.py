@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -77,7 +77,7 @@ def _(mo):
 def _(Algebra):
     alg = Algebra((1, 1))
     e1, e2 = alg.basis_vectors(lazy=True)
-    return alg, e1, e2
+    return e1, e2
 
 
 @app.cell(hide_code=True)
@@ -103,26 +103,20 @@ def _(mo):
 
 
 @app.cell
-def _():
-    return
+def _(alpha, beta, draw_reflections, e1, e2, gm, mo, np, vector_angle):
+    _a = np.radians(alpha.value)
+    _b = np.radians(beta.value)
+    _v = np.radians(vector_angle.value)
 
-
-@app.cell
-def _(alg, alpha, beta, draw_reflections, e1, e2, gm, mo, np, vector_angle):
-    a = np.radians(alpha.value)
-    b = np.radians(beta.value)
-    v = np.radians(vector_angle.value)
-
-    line1 = np.cos(a) * e1 + np.sin(a) * e2
-    line2 = np.cos(b) * e1 + np.sin(b) * e2
-    n1 = ((-line1 | e2) * e1 + (line1 | e1) * e2).name("n_1")
-    n2 = ((-line2 | e2) * e1 + (line2 | e1) * e2).name("n_2")
-    x = (np.cos(v) * e1 + np.sin(v) * e2).name("x")
-    x1 = (-n1 * x * n1).name("x_1")
-    x2 = (-n2 * x1 * n2).name("x_2")
+    _line1 = np.cos(_a) * e1 + np.sin(_a) * e2
+    _line2 = np.cos(_b) * e1 + np.sin(_b) * e2
+    n1 = ((-_line1 | e2) * e1 + (_line1 | e1) * e2).eval().name(latex=r"n_1")
+    n2 = ((-_line2 | e2) * e1 + (_line2 | e1) * e2).eval().name(latex=r"n_2")
+    x = (np.cos(_v) * e1 + np.sin(_v) * e2).name("x")
+    x1 = (-n1 * x * n1).name(latex=r"x_1")
+    x2 = (-n2 * x1 * n2).name(latex=r"x_2")
     R = (n2 * n1).name("R")
-    rotor_action = (R * x * ~R)
-    rotation_angle = alg.scalar(np.radians(2 * (beta.value - alpha.value))).name(latex=r"\theta")
+    x_R = (R * x * ~R).name(latex=r"x'")
 
     _md = t"""
     {n1.display()} <br/>
@@ -131,9 +125,8 @@ def _(alg, alpha, beta, draw_reflections, e1, e2, gm, mo, np, vector_angle):
     {x1.display()} <br/>
     {x2.display()} <br/>
     {R.display()} <br/>
-    {rotor_action.display()} <br/>
-    The sliders set mirror line angles; $n_1$ and $n_2$ are the corresponding unit normals used in the rotor construction. <br/>
-    {rotation_angle.display()} $\\quad$ with $\\theta = 2(\\beta - \\alpha) = {2 * (beta.value - alpha.value)}^\\circ$
+    {x_R.display()} <br/>
+    Rotation angle: $\\theta = 2(\\beta - \\alpha) = {2 * (beta.value - alpha.value)}^\\circ$
     """
 
     mo.vstack([alpha, beta, vector_angle, gm.md(_md), draw_reflections(n1, n2, x, x1, x2)])

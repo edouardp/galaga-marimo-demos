@@ -15,30 +15,6 @@ def _():
     return Algebra, complement, dual, gm, mo, np, plt, uncomplement, undual
 
 
-@app.cell
-def _(np, plt):
-    def draw_area_vectors(angle_deg):
-        _theta = np.radians(angle_deg)
-        _a = np.array([1.0, 0.0])
-        _b = np.array([np.cos(_theta), np.sin(_theta)])
-
-        _fig, _ax = plt.subplots(figsize=(6, 6))
-        _ax.annotate("", xy=_a, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
-        _ax.annotate("", xy=_b, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
-        _ax.fill([0, _a[0], _a[0] + _b[0], _b[0]], [0, _a[1], _a[1] + _b[1], _b[1]], color="goldenrod", alpha=0.25)
-        _ax.set_aspect("equal")
-        _ax.set_xlim(-1.5, 2.0)
-        _ax.set_ylim(-1.2, 2.0)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_title("A bivector as an oriented area element")
-        _ax.grid(True, alpha=0.25)
-        plt.close(_fig)
-        return _fig
-
-    return (draw_area_vectors,)
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -114,15 +90,16 @@ def _(mo):
 
 
 @app.cell
-def _(area_angle, complement, draw_area_vectors, dual, e1, e2, gm, mo, np):
-    _theta = np.radians(area_angle.value)
+def _(alg, area_angle, complement, draw_area_vectors, dual, e1, e2, gm, mo, np):
+    _theta = alg.scalar(np.radians(area_angle.value)).name(latex=r"\theta")
     _a = e1.name("a")
-    _b = (np.cos(_theta) * e1 + np.sin(_theta) * e2).name("b")
+    _b = (np.cos(_theta.scalar_part) * e1 + np.sin(_theta.scalar_part) * e2).name("b")
     _area = (_a ^ _b).name(latex=r"a \wedge b")
     _dual_area = dual(_area).name(latex=r"(a \wedge b)^\star")
     _comp_area = complement(_area).name(latex=r"(a \wedge b)^\complement")
 
     _md = t"""
+    {_theta.display()} <br/>
     {_a.display()} <br/>
     {_b.display()} <br/>
     {_area.display()} <br/>
@@ -133,7 +110,7 @@ def _(area_angle, complement, draw_area_vectors, dual, e1, e2, gm, mo, np):
     mo.vstack([
         area_angle,
         gm.md(_md),
-        draw_area_vectors(area_angle.value),
+        draw_area_vectors(_theta),
     ])
     return
 
@@ -201,6 +178,38 @@ def _(mo):
     In Euclidean examples, dual and complement can look deceptively similar. The difference becomes important once the metric changes or becomes degenerate. `dual(...)` is metric-dependent; `complement(...)` is a basis-combinatorial operation that remains available in settings like PGA.
     """)
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(np, plt):
+    def draw_area_vectors(theta):
+        _theta = theta.scalar_part if hasattr(theta, "scalar_part") else float(theta)
+        _a = np.array([1.0, 0.0])
+        _b = np.array([np.cos(_theta), np.sin(_theta)])
+
+        _fig, _ax = plt.subplots(figsize=(6, 6))
+        _ax.annotate("", xy=_a, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
+        _ax.annotate("", xy=_b, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
+        _ax.fill([0, _a[0], _a[0] + _b[0], _b[0]], [0, _a[1], _a[1] + _b[1], _b[1]], color="goldenrod", alpha=0.25)
+        _ax.set_aspect("equal")
+        _ax.set_xlim(-1.5, 2.0)
+        _ax.set_ylim(-1.2, 2.0)
+        _ax.set_xlabel("e1")
+        _ax.set_ylabel("e2")
+        _ax.set_title("A bivector as an oriented area element")
+        _ax.grid(True, alpha=0.25)
+        plt.close(_fig)
+        return _fig
+
+    return (draw_area_vectors,)
 
 
 @app.cell

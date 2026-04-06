@@ -681,27 +681,27 @@ wheels = [
 
 [[package]]
 name = "galaga"
-version = "1.0.1"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/f8/3bbd4e36126cd3ae9f3fb08711625125a69d37597543f1510f60bccf0774/galaga-1.0.1.tar.gz", hash = "sha256:9558cffd3ea8bcf327aad2824c3128f9bef114f82608b0782331370f1779b438", size = 133925, upload-time = "2026-04-05T10:59:32.925Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/13/01/b48e3e2dd9cf7d619191e98f4528d771287861e6d409f57a207ff5707729/galaga-1.1.0.tar.gz", hash = "sha256:2a0c5dadb867150a1c774da2f7eb8f4e43d60194f1145726c1fab18ca3e72f60", size = 136045, upload-time = "2026-04-06T10:50:59.069Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/d1/15d7885467ee8e4cfd4937c1176fc850807d953e78ee2becefa31ee86f34/galaga-1.0.1-py3-none-any.whl", hash = "sha256:28b3f04a7801d406d5d01e7e601c97858e45579090a97b0d4c431abdaf98fba3", size = 65382, upload-time = "2026-04-05T10:59:31.225Z" },
+    { url = "https://files.pythonhosted.org/packages/52/40/808dbde4a976586d49d6caab65dbffcc60cef5f783b97468ae6b864eb53f/galaga-1.1.0-py3-none-any.whl", hash = "sha256:c87dc2082a0f8f77a7af22880ce778b96f8521fcb2bb0c6930d15471359a3605", size = 66165, upload-time = "2026-04-06T10:50:57.683Z" },
 ]
 
 [[package]]
 name = "galaga-marimo"
-version = "1.0.1"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "galaga" },
     { name = "marimo" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f9/68/228a47998474106c67ae0d5c35f5e1ff9f83ca28ae3ac32f385268cc2444/galaga_marimo-1.0.1.tar.gz", hash = "sha256:246e8bd27f78b8b5957c837daa29bc47c665a5b79226653c237096a68cbccfd8", size = 8182, upload-time = "2026-04-05T10:59:34.969Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/63/fa/cdbc6679c87acf2d635051bde239ef8adbd9e03774fb3ebbaacce2cd6c88/galaga_marimo-1.1.0.tar.gz", hash = "sha256:a91e52cd1c2af00356af7e8da405ff2c617ead9f2fd797f20d232b5ac3bab112", size = 8181, upload-time = "2026-04-06T10:51:01.799Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/ef/18c60862a133d46477c0c378c6b4328bb4fb3ccc5c2b493ac0c691b45622/galaga_marimo-1.0.1-py3-none-any.whl", hash = "sha256:81adced93034a7aa731140a42cc683d8c78d1dc3caceff8a45eb25376b69404d", size = 5603, upload-time = "2026-04-05T10:59:36.039Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/6b/f703a27e1f879205a2d1cd33923b8fc661ca4fce4a92cf5ab7f4fcbb72e1/galaga_marimo-1.1.0-py3-none-any.whl", hash = "sha256:d8a4c4ebfb5da4f0a0defd7e5e274ca6e764238d4e0e9c4068e23c0f6f6de649", size = 5604, upload-time = "2026-04-06T10:51:00.628Z" },
 ]
 
 [[package]]
@@ -2161,11 +2161,11 @@ wheels = [
 
 [[package]]
 name = "python-multipart"
-version = "0.0.22"
+version = "0.0.24"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/94/01/979e98d542a70714b0cb2b6728ed0b7c46792b695e3eaec3e20711271ca3/python_multipart-0.0.22.tar.gz", hash = "sha256:7340bef99a7e0032613f56dc36027b959fd3b30a787ed62d310e951f7c3a3a58", size = 37612, upload-time = "2026-01-25T10:15:56.219Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/45/e23b5dc14ddb9918ae4a625379506b17b6f8fc56ca1d82db62462f59aea6/python_multipart-0.0.24.tar.gz", hash = "sha256:9574c97e1c026e00bc30340ef7c7d76739512ab4dfd428fec8c330fa6a5cc3c8", size = 37695, upload-time = "2026-04-05T20:49:13.829Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/d0/397f9626e711ff749a95d96b7af99b9c566a9bb5129b8e4c10fc4d100304/python_multipart-0.0.22-py3-none-any.whl", hash = "sha256:2b2cd894c83d21bf49d702499531c7bafd057d730c201782048f7945d82de155", size = 24579, upload-time = "2026-01-25T10:15:54.811Z" },
+    { url = "https://files.pythonhosted.org/packages/a3/73/89930efabd4da63cea44a3f438aeb753d600123570e6d6264e763617a9ce/python_multipart-0.0.24-py3-none-any.whl", hash = "sha256:9b110a98db707df01a53c194f0af075e736a770dc5058089650d70b4a182f950", size = 24420, upload-time = "2026-04-05T20:49:12.555Z" },
 ]
 
 [[package]]
@@ -2639,15 +2639,15 @@ wheels = [
 
 [[package]]
 name = "uvicorn"
-version = "0.43.0"
+version = "0.44.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "h11" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/f2/368268300fb8af33743508d738ef7bb4d56afdb46c6d9c0fa3dd515df171/uvicorn-0.43.0.tar.gz", hash = "sha256:ab1652d2fb23abf124f36ccc399828558880def222c3cb3d98d24021520dc6e8", size = 85686, upload-time = "2026-04-03T18:37:48.984Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/da/6eee1ff8b6cbeed47eeb5229749168e81eb4b7b999a1a15a7176e51410c9/uvicorn-0.44.0.tar.gz", hash = "sha256:6c942071b68f07e178264b9152f1f16dfac5da85880c4ce06366a96d70d4f31e", size = 86947, upload-time = "2026-04-06T09:23:22.826Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/df/0cf5b0c451602748fdc7a702d4667f6e209bf96aa6e3160d754234445f2a/uvicorn-0.43.0-py3-none-any.whl", hash = "sha256:46fac64f487fd968cd999e5e49efbbe64bd231b5bd8b4a0b482a23ebce499620", size = 68591, upload-time = "2026-04-03T18:37:47.64Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/23/a5bbd9600dd607411fa644c06ff4951bec3a4d82c4b852374024359c19c0/uvicorn-0.44.0-py3-none-any.whl", hash = "sha256:ce937c99a2cc70279556967274414c087888e8cec9f9c94644dfca11bd3ced89", size = 69425, upload-time = "2026-04-06T09:23:21.524Z" },
 ]
 
 [[package]]

@@ -6,7 +6,7 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
-    from galaga import Algebra, exp, simplify
+    from galaga import Algebra, exp
     import galaga_marimo as gm
     import numpy as np
     import marimo as mo
@@ -97,21 +97,17 @@ def _(mo):
 def _(alg, e12, e3, e31, exp, np, phi_b, theta_b):
     _theta = alg.scalar(np.radians(theta_b.value)).name(latex=r"\theta")
     _phi = alg.scalar(np.radians(phi_b.value)).name(latex=r"\phi")
+    _one = alg.scalar(1).name(latex="1")
+    _half = alg.frac(1, 2)
 
     R_A = (1 + 0 * e12).name(latex=r"R_A")
     R_B = (exp(-_phi * e12 / 2) * exp(-_theta * e31 / 2)).name(latex=r"R_B")
     bloch_A = (R_A * e3 * ~R_A).name(latex=r"s_A")
     bloch_B = (R_B * e3 * ~R_B).name(latex=r"s_B")
-    overlap_sq = (1.0 + (bloch_A | bloch_B)) / 2.0
-    sym_norm = 1.0 + overlap_sq
-    anti_norm = 1.0 - overlap_sq
+    overlap_sq = ((_one + (bloch_A | bloch_B)) * _half).name(latex=r"|\langle a|b\rangle|^2")
+    sym_norm = (_one + overlap_sq).name(latex=r"\lVert \Psi_+ \rVert^2")
+    anti_norm = (_one - overlap_sq).name(latex=r"\lVert \Psi_- \rVert^2")
     return R_A, R_B, anti_norm, bloch_A, bloch_B, overlap_sq, sym_norm
-
-
-@app.cell
-def _(bloch_A):
-    bloch_A.display()
-    return
 
 
 @app.cell
@@ -132,17 +128,18 @@ def _(
     Take the reference rotor <br/>
     {R_A.display()} <br/>
     and the varied rotor <br/>
-    {R_B.display()}
+    {R_B.display()} <br/>
 
     These determine the observable directions <br/>
-    {bloch_A.display()} <br/> {bloch_B.display()}
+    {bloch_A.display()} <br/>
+    {bloch_B.display()} <br/>
 
-    In this notebook we use the GA overlap magnitude
-    $|\\langle a|b\\rangle|^2 =$  {overlap_sq.display():.4f}
+    In this notebook we use the GA overlap magnitude <br/>
+    {overlap_sq.display()} <br/>
 
-    So the exchange sectors have norms
-
-    $\\lVert \\Psi_+ \\rVert^2 =$ {sym_norm:.4f}, $\\qquad \\lVert \\Psi_- \\rVert^2 =$ {anti_norm:.4f}
+    So the exchange sectors have norms <br/>
+    {sym_norm.display()} <br/>
+    {anti_norm.display()} <br/>
 
     When the two one-particle directions coincide, $s_B = s_A$, the overlap
     magnitude becomes $1$ and the antisymmetric sector collapses to zero.
@@ -173,6 +170,7 @@ def _(mo):
 @app.cell
 def _(
     anti_norm,
+    bloch_A,
     bloch_B,
     draw_exchange_symmetry,
     gm,
@@ -181,22 +179,19 @@ def _(
     sym_norm,
     theta_b,
 ):
-    _md = rf"""
-    Fixed particle A:
-    $$|a\rangle = \begin{{pmatrix}}1\\0\end{{pmatrix}}, \qquad s_A = e_3.$$
+    _md = t"""
+    Fixed particle A <br/>
+    {bloch_A.display()} <br/>
 
-    The second particle moves over the Bloch sphere.
+    The second particle moves over the Bloch sphere. <br/>
 
-    The symmetric two-particle sector has norm
-    $$\lVert \Psi_+ \rVert^2 = {sym_norm:.4f},$$
+    {sym_norm.display()} <br/>
+    {anti_norm.display()} <br/>
 
-    while the antisymmetric sector has norm
-    $$\lVert \Psi_- \rVert^2 = {anti_norm:.4f}.$$
-
-    For identical fermions, that antisymmetric sector is the relevant one.
+    For identical fermions, the antisymmetric sector is the relevant one.
     """
 
-    mo.vstack([gm.md(_md), draw_exchange_symmetry(bloch_B, sym_norm.scalar_part, anti_norm.scalar_part, theta_b.value, phi_b.value)])
+    mo.vstack([gm.md(_md), draw_exchange_symmetry(bloch_B, sym_norm, anti_norm, theta_b.value, phi_b.value)])
     return
 
 
@@ -212,6 +207,8 @@ def _(mo):
 def _(np, plt):
     def draw_exchange_symmetry(bloch_B, sym_norm, anti_norm, theta_deg, phi_deg):
         _B = np.array(bloch_B.vector_part[:3], dtype=float)
+        _sym = sym_norm.scalar_part if hasattr(sym_norm, "scalar_part") else float(sym_norm)
+        _anti = anti_norm.scalar_part if hasattr(anti_norm, "scalar_part") else float(anti_norm)
 
         _fig = plt.figure(figsize=(12.4, 5.0))
         _ax1 = _fig.add_subplot(121, projection="3d")
@@ -231,7 +228,7 @@ def _(np, plt):
         _ax1.set_box_aspect((1, 1, 1))
         _ax1.set_title("One-particle Bloch directions")
 
-        _ax2.bar([0, 1], [sym_norm, anti_norm], color=["#2563eb", "#d62828"], alpha=0.82, width=0.6)
+        _ax2.bar([0, 1], [_sym, _anti], color=["#2563eb", "#d62828"], alpha=0.82, width=0.6)
         _ax2.set_xticks([0, 1], [r"$\|\Psi_+\|^2$", r"$\|\Psi_-\|^2$"])
         _ax2.set_ylim(0, 2.05)
         _ax2.grid(True, axis="y", alpha=0.25)
