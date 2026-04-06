@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -13,65 +13,7 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
 
-    return Algebra, exp, gm, mo, np, plt, sandwich
-
-
-@app.cell
-def _(np, plt, s1, s2, s3):
-    def _rel_components(_mv):
-        return np.array(
-            [
-                (_mv | s1).scalar_part / ((s1 | s1).scalar_part),
-                (_mv | s2).scalar_part / ((s2 | s2).scalar_part),
-                (_mv | s3).scalar_part / ((s3 | s3).scalar_part),
-            ],
-            dtype=float,
-        )
-
-    def draw_boosted_field(E_before, B_before, E_after, B_after, coeffs_before, coeffs_after):
-        _Eb = _rel_components(E_before)
-        _Bb = _rel_components(B_before)
-        _Ea = _rel_components(E_after)
-        _Ba = _rel_components(B_after)
-
-        _fig = plt.figure(figsize=(14.0, 5.2))
-        _ax1 = _fig.add_subplot(131, projection="3d")
-        _ax2 = _fig.add_subplot(132, projection="3d")
-        _ax3 = _fig.add_subplot(133)
-
-        for _ax, _E, _B, _title in [
-            (_ax1, _Eb, _Bb, "Before boost"),
-            (_ax2, _Ea, _Ba, "After boost"),
-        ]:
-            _ax.quiver(0, 0, 0, _E[0], _E[1], _E[2], color="crimson", linewidth=2.5)
-            _ax.quiver(0, 0, 0, _B[0], _B[1], _B[2], color="steelblue", linewidth=2.5)
-            _ax.set_xlim(-2.5, 2.5)
-            _ax.set_ylim(-2.5, 2.5)
-            _ax.set_zlim(-2.5, 2.5)
-            _ax.set_xlabel(r"$\sigma_1$")
-            _ax.set_ylabel(r"$\sigma_2$")
-            _ax.set_zlabel(r"$\sigma_3$")
-            _ax.set_title(_title)
-            _ax.plot([], [], color="crimson", label="E")
-            _ax.plot([], [], color="steelblue", label="B")
-            _ax.legend(loc="upper left")
-
-        _labels = [r"$\gamma_1\gamma_0$", r"$\gamma_2\gamma_0$", r"$\gamma_3\gamma_0$", r"$\gamma_2\gamma_3$", r"$\gamma_3\gamma_1$", r"$\gamma_1\gamma_2$"]
-        _x = np.arange(len(_labels))
-        _w = 0.36
-        _ax3.bar(_x - _w / 2, coeffs_before, width=_w, color="gray", alpha=0.75, label="before")
-        _ax3.bar(_x + _w / 2, coeffs_after, width=_w, color="darkorange", alpha=0.82, label="after")
-        _ax3.axhline(0, color="black", linewidth=0.8)
-        _ax3.set_xticks(_x, _labels)
-        _ax3.set_ylim(-2.5, 2.5)
-        _ax3.grid(True, axis="y", alpha=0.25)
-        _ax3.set_title("Bivector coefficients before and after")
-        _ax3.legend(loc="upper right")
-
-        plt.close(_fig)
-        return _fig
-
-    return (draw_boosted_field,)
+    return Algebra, b_sta, exp, gm, mo, np, plt, sandwich
 
 
 @app.cell(hide_code=True)
@@ -115,13 +57,13 @@ def _(mo):
 
 
 @app.cell
-def _(Algebra):
-    sta = Algebra((1, -1, -1, -1), blades=b_sta())
+def _(Algebra, b_sta):
+    sta = Algebra((1, -1, -1, -1), blades=b_sta(sigmas=True, pseudovectors=True))
     g0, g1, g2, g3 = sta.basis_vectors(lazy=True)
-    I = sta.I.name("I")
-    s1 = (g1 * g0).name(latex=r"\sigma_1")
-    s2 = (g2 * g0).name(latex=r"\sigma_2")
-    s3 = (g3 * g0).name(latex=r"\sigma_3")
+    I = sta.I
+    s1 = (g1 * g0).eval()
+    s2 = (g2 * g0).eval()
+    s3 = (g3 * g0).eval()
     return I, g0, g1, g2, g3, s1, s2, s3, sta
 
 
@@ -230,9 +172,70 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
     return
+
+
+@app.cell(hide_code=True)
+def _(np, plt, s1, s2, s3):
+    def _rel_components(_mv):
+        return np.array(
+            [
+                (_mv | s1).scalar_part / ((s1 | s1).scalar_part),
+                (_mv | s2).scalar_part / ((s2 | s2).scalar_part),
+                (_mv | s3).scalar_part / ((s3 | s3).scalar_part),
+            ],
+            dtype=float,
+        )
+
+    def draw_boosted_field(E_before, B_before, E_after, B_after, coeffs_before, coeffs_after):
+        _Eb = _rel_components(E_before)
+        _Bb = _rel_components(B_before)
+        _Ea = _rel_components(E_after)
+        _Ba = _rel_components(B_after)
+
+        _fig = plt.figure(figsize=(14.0, 5.2))
+        _ax1 = _fig.add_subplot(131, projection="3d")
+        _ax2 = _fig.add_subplot(132, projection="3d")
+        _ax3 = _fig.add_subplot(133)
+
+        for _ax, _E, _B, _title in [
+            (_ax1, _Eb, _Bb, "Before boost"),
+            (_ax2, _Ea, _Ba, "After boost"),
+        ]:
+            _ax.quiver(0, 0, 0, _E[0], _E[1], _E[2], color="crimson", linewidth=2.5)
+            _ax.quiver(0, 0, 0, _B[0], _B[1], _B[2], color="steelblue", linewidth=2.5)
+            _ax.set_xlim(-2.5, 2.5)
+            _ax.set_ylim(-2.5, 2.5)
+            _ax.set_zlim(-2.5, 2.5)
+            _ax.set_xlabel(r"$\sigma_1$")
+            _ax.set_ylabel(r"$\sigma_2$")
+            _ax.set_zlabel(r"$\sigma_3$")
+            _ax.set_title(_title)
+            _ax.plot([], [], color="crimson", label="E")
+            _ax.plot([], [], color="steelblue", label="B")
+            _ax.legend(loc="upper left")
+
+        _labels = [r"$\gamma_1\gamma_0$", r"$\gamma_2\gamma_0$", r"$\gamma_3\gamma_0$", r"$\gamma_2\gamma_3$", r"$\gamma_3\gamma_1$", r"$\gamma_1\gamma_2$"]
+        _x = np.arange(len(_labels))
+        _w = 0.36
+        _ax3.bar(_x - _w / 2, coeffs_before, width=_w, color="gray", alpha=0.75, label="before")
+        _ax3.bar(_x + _w / 2, coeffs_after, width=_w, color="darkorange", alpha=0.82, label="after")
+        _ax3.axhline(0, color="black", linewidth=0.8)
+        _ax3.set_xticks(_x, _labels)
+        _ax3.set_ylim(-2.5, 2.5)
+        _ax3.grid(True, axis="y", alpha=0.25)
+        _ax3.set_title("Bivector coefficients before and after")
+        _ax3.legend(loc="upper right")
+
+        plt.close(_fig)
+        return _fig
+
+    return (draw_boosted_field,)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -13,69 +13,6 @@ def _():
     import matplotlib.pyplot as plt
 
     return Algebra, exp, gm, mo, np, plt, project, reject
-
-
-@app.cell
-def _(np, plt):
-    def draw_line_projection(a, p, r, v):
-        a_xy = a.eval().vector_part[:2]
-        v_xy = v.eval().vector_part[:2]
-        p_xy = p.eval().vector_part[:2]
-        r_xy = r.eval().vector_part[:2]
-
-        fig, ax = plt.subplots(figsize=(5.8, 5.8))
-        ax.plot([-2.5 * a_xy[0], 2.5 * a_xy[0]], [-2.5 * a_xy[1], 2.5 * a_xy[1]], color="gray", alpha=0.5)
-        ax.annotate("", xy=v_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="black", lw=2))
-        ax.annotate("", xy=p_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
-        ax.annotate("", xy=(p_xy[0] + r_xy[0], p_xy[1] + r_xy[1]), xytext=(p_xy[0], p_xy[1]), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
-        ax.plot([], [], color="black", label="v")
-        ax.plot([], [], color="steelblue", label="proj")
-        ax.plot([], [], color="crimson", label="rej")
-        ax.set_xlim(-3, 3)
-        ax.set_ylim(-3, 3)
-        ax.set_aspect("equal")
-        ax.grid(True, alpha=0.25)
-        ax.set_xlabel("e1")
-        ax.set_ylabel("e2")
-        ax.set_title("Projection onto a line")
-        ax.legend(loc="upper left")
-        plt.close(fig)
-        return fig
-
-    def draw_plane_projection(v, p_plane, r_plane, plane_angle_deg):
-        v_xyz = v.eval().vector_part
-        p_xyz = p_plane.eval().vector_part
-        r_xyz = r_plane.eval().vector_part
-
-        fig = plt.figure(figsize=(6.6, 5.4))
-        ax = fig.add_subplot(111, projection="3d")
-
-        angle = np.radians(plane_angle_deg)
-        u = np.array([np.cos(angle), np.sin(angle), 0.0])
-        w = np.array([0.0, 0.0, 1.0])
-        s = np.linspace(-2.4, 2.4, 2)
-        t = np.linspace(-2.4, 2.4, 2)
-        ss, tt = np.meshgrid(s, t)
-        xx = ss * u[0] + tt * w[0]
-        yy = ss * u[1] + tt * w[1]
-        zz = ss * u[2] + tt * w[2]
-
-        ax.plot_surface(xx, yy, zz, alpha=0.12, color="steelblue")
-        ax.quiver(0, 0, 0, v_xyz[0], v_xyz[1], v_xyz[2], color="black", linewidth=2.5, arrow_length_ratio=0.08)
-        ax.quiver(0, 0, 0, p_xyz[0], p_xyz[1], p_xyz[2], color="steelblue", linewidth=2.5, arrow_length_ratio=0.08)
-        ax.quiver(p_xyz[0], p_xyz[1], p_xyz[2], r_xyz[0], r_xyz[1], r_xyz[2], color="crimson", linewidth=2.5, arrow_length_ratio=0.08)
-        ax.set_xlim(-3, 3)
-        ax.set_ylim(-3, 3)
-        ax.set_zlim(-3, 3)
-        ax.set_box_aspect((1, 1, 1))
-        ax.set_xlabel("e1")
-        ax.set_ylabel("e2")
-        ax.set_zlabel("e3")
-        ax.set_title("Projection into a plane")
-        plt.close(fig)
-        return fig
-
-    return draw_line_projection, draw_plane_projection
 
 
 @app.cell(hide_code=True)
@@ -163,7 +100,7 @@ def _(
     {line_v.display()} <br/>
     {p.display()} <br/>
     {r.display()} <br/>
-    Check: {(p + r).display()} = {line_v.eval()}
+    Check Equal: $\\qquad$ {(p + r).display()} $\\qquad and \\qquad$ {line_v.display()}
     """
 
     mo.vstack([
@@ -225,7 +162,7 @@ def _(
     {plane_v.display()} <br/>
     {p_plane.display()} <br/>
     {r_plane.display()} <br/>
-    Check: {(p_plane + r_plane).display()} $= v$
+    Check Equal: $\\qquad$ {(p_plane + r_plane).display()} $\\qquad and \\qquad$ {plane_v.display()}
     """
 
     mo.vstack([
@@ -249,9 +186,75 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
     return
+
+
+@app.cell(hide_code=True)
+def _(np, plt):
+    def draw_line_projection(a, p, r, v):
+        a_xy = a.eval().vector_part[:2]
+        v_xy = v.eval().vector_part[:2]
+        p_xy = p.eval().vector_part[:2]
+        r_xy = r.eval().vector_part[:2]
+
+        fig, ax = plt.subplots(figsize=(5.8, 5.8))
+        ax.plot([-2.5 * a_xy[0], 2.5 * a_xy[0]], [-2.5 * a_xy[1], 2.5 * a_xy[1]], color="gray", alpha=0.5)
+        ax.annotate("", xy=v_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="black", lw=2))
+        ax.annotate("", xy=p_xy, xytext=(0, 0), arrowprops=dict(arrowstyle="->", color="steelblue", lw=2))
+        ax.annotate("", xy=(p_xy[0] + r_xy[0], p_xy[1] + r_xy[1]), xytext=(p_xy[0], p_xy[1]), arrowprops=dict(arrowstyle="->", color="crimson", lw=2))
+        ax.plot([], [], color="black", label="v")
+        ax.plot([], [], color="steelblue", label="proj")
+        ax.plot([], [], color="crimson", label="rej")
+        ax.set_xlim(-3, 3)
+        ax.set_ylim(-3, 3)
+        ax.set_aspect("equal")
+        ax.grid(True, alpha=0.25)
+        ax.set_xlabel("e1")
+        ax.set_ylabel("e2")
+        ax.set_title("Projection onto a line")
+        ax.legend(loc="upper left")
+        plt.close(fig)
+        return fig
+
+    def draw_plane_projection(v, p_plane, r_plane, plane_angle_deg):
+        v_xyz = v.eval().vector_part
+        p_xyz = p_plane.eval().vector_part
+        r_xyz = r_plane.eval().vector_part
+
+        fig = plt.figure(figsize=(6.6, 5.4))
+        ax = fig.add_subplot(111, projection="3d")
+
+        angle = np.radians(plane_angle_deg)
+        u = np.array([np.cos(angle), np.sin(angle), 0.0])
+        w = np.array([0.0, 0.0, 1.0])
+        s = np.linspace(-2.4, 2.4, 2)
+        t = np.linspace(-2.4, 2.4, 2)
+        ss, tt = np.meshgrid(s, t)
+        xx = ss * u[0] + tt * w[0]
+        yy = ss * u[1] + tt * w[1]
+        zz = ss * u[2] + tt * w[2]
+
+        ax.plot_surface(xx, yy, zz, alpha=0.12, color="steelblue")
+        ax.quiver(0, 0, 0, v_xyz[0], v_xyz[1], v_xyz[2], color="black", linewidth=2.5, arrow_length_ratio=0.08)
+        ax.quiver(0, 0, 0, p_xyz[0], p_xyz[1], p_xyz[2], color="steelblue", linewidth=2.5, arrow_length_ratio=0.08)
+        ax.quiver(p_xyz[0], p_xyz[1], p_xyz[2], r_xyz[0], r_xyz[1], r_xyz[2], color="crimson", linewidth=2.5, arrow_length_ratio=0.08)
+        ax.set_xlim(-3, 3)
+        ax.set_ylim(-3, 3)
+        ax.set_zlim(-3, 3)
+        ax.set_box_aspect((1, 1, 1))
+        ax.set_xlabel("e1")
+        ax.set_ylabel("e2")
+        ax.set_zlabel("e3")
+        ax.set_title("Projection into a plane")
+        plt.close(fig)
+        return fig
+
+    return draw_line_projection, draw_plane_projection
 
 
 if __name__ == "__main__":

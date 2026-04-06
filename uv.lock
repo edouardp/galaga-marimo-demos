@@ -681,27 +681,27 @@ wheels = [
 
 [[package]]
 name = "galaga"
-version = "1.0.0"
+version = "1.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/86/55/0f6b4b6938578336888c5240f4a510d9414ed4bbf524661fdfce7236f640/galaga-1.0.0.tar.gz", hash = "sha256:b77e3ecc1e83a098fb4a33e70434a8107798b3eac3a5f96c1baf5f7900d5d52f", size = 131431, upload-time = "2026-04-05T08:57:37.952Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/f8/3bbd4e36126cd3ae9f3fb08711625125a69d37597543f1510f60bccf0774/galaga-1.0.1.tar.gz", hash = "sha256:9558cffd3ea8bcf327aad2824c3128f9bef114f82608b0782331370f1779b438", size = 133925, upload-time = "2026-04-05T10:59:32.925Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/56/e1/d10e5f477917cffa851d17ae3319c81979c783236f0ac061880fdeafdb23/galaga-1.0.0-py3-none-any.whl", hash = "sha256:dc60eb4ec4fb3b39d1626897fe6bdaa476598e0c74f48c73c93a7d15d4859c4d", size = 64430, upload-time = "2026-04-05T08:57:35.56Z" },
+    { url = "https://files.pythonhosted.org/packages/24/d1/15d7885467ee8e4cfd4937c1176fc850807d953e78ee2becefa31ee86f34/galaga-1.0.1-py3-none-any.whl", hash = "sha256:28b3f04a7801d406d5d01e7e601c97858e45579090a97b0d4c431abdaf98fba3", size = 65382, upload-time = "2026-04-05T10:59:31.225Z" },
 ]
 
 [[package]]
 name = "galaga-marimo"
-version = "1.0.0"
+version = "1.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "galaga" },
     { name = "marimo" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ab/9d/f244b18bc40573221a2e3813b3ec46c7f5a409de505da06237037f1560be/galaga_marimo-1.0.0.tar.gz", hash = "sha256:c9ba55d37ffe0765a673bb67ecb0e621fd32b733f3b238b1a205a5cc476a9fad", size = 8184, upload-time = "2026-04-05T08:57:41.188Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/68/228a47998474106c67ae0d5c35f5e1ff9f83ca28ae3ac32f385268cc2444/galaga_marimo-1.0.1.tar.gz", hash = "sha256:246e8bd27f78b8b5957c837daa29bc47c665a5b79226653c237096a68cbccfd8", size = 8182, upload-time = "2026-04-05T10:59:34.969Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/8f/c1a686789d1e355562ba8924faf5bf50391f8887c78fd217caa9af54aa55/galaga_marimo-1.0.0-py3-none-any.whl", hash = "sha256:d8e0a003c5590cb09a07a510a1838b0784bd41f09ebbff113536b0dfe3f8e851", size = 5603, upload-time = "2026-04-05T08:57:39.784Z" },
+    { url = "https://files.pythonhosted.org/packages/1c/ef/18c60862a133d46477c0c378c6b4328bb4fb3ccc5c2b493ac0c691b45622/galaga_marimo-1.0.1-py3-none-any.whl", hash = "sha256:81adced93034a7aa731140a42cc683d8c78d1dc3caceff8a45eb25376b69404d", size = 5603, upload-time = "2026-04-05T10:59:36.039Z" },
 ]
 
 [[package]]
@@ -724,8 +724,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "galaga", specifier = ">=0.2.0" },
-    { name = "galaga-marimo", specifier = ">=0.2.0" },
+    { name = "galaga", specifier = ">=1.0.0" },
+    { name = "galaga-marimo", specifier = ">=1.0.0" },
     { name = "marimo", specifier = ">=0.21.1" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "pydantic-ai", specifier = ">=1.76.0" },

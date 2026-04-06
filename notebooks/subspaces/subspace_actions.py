@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -16,7 +16,7 @@ def _():
 
 
 @app.cell
-def _(np, plt):
+def _(plt):
     def draw_subspace_actions(a, v, p, r, vr):
         _a = a.eval().vector_part[:2]
         _v = v.eval().vector_part[:2]
@@ -87,10 +87,23 @@ def _(mo):
 
 
 @app.cell
-def _(draw_subspace_actions, e1, e2, gm, line_angle, mo, np, project, reflect, reject, vector_angle, vector_length):
+def _(
+    draw_subspace_actions,
+    e1,
+    e2,
+    gm,
+    line_angle,
+    mo,
+    np,
+    project,
+    reflect,
+    reject,
+    vector_angle,
+    vector_length,
+):
     _a = np.radians(line_angle.value)
     _v = np.radians(vector_angle.value)
-    _line = (np.cos(_a) * e1 + np.sin(_a) * e2).name("a")
+    _line = (np.cos(_a) * e1 + np.sin(_a) * e2).eval().name("a")
     _vec = (vector_length.value * np.cos(_v) * e1 + vector_length.value * np.sin(_v) * e2).name("v")
     _p = project(_vec, _line).name("p")
     _r = reject(_vec, _line).name("r")

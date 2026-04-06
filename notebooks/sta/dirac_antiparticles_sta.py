@@ -1,19 +1,19 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
 @app.cell
 def _():
-    from galaga import Algebra, exp, scalar_sqrt, symbolic
+    from galaga import Algebra, exp, scalar_sqrt
     from galaga.blade_convention import b_sta
     import galaga_marimo as gm
     import numpy as np
     import marimo as mo
     import matplotlib.pyplot as plt
 
-    return Algebra, exp, gm, mo, np, plt, scalar_sqrt
+    return Algebra, b_sta, exp, gm, mo, np, plt, scalar_sqrt
 
 
 @app.cell
@@ -63,8 +63,8 @@ def _(mo):
 
 
 @app.cell
-def _(Algebra):
-    sta = Algebra((1, -1, -1, -1), blades=b_sta())
+def _(Algebra, b_sta):
+    sta = Algebra((1, -1, -1, -1), blades=b_sta(overrides={"pss": "I"}))
     g0, g1, g2, g3 = sta.basis_vectors(lazy=True)
     I = sta.pseudoscalar(lazy=True).name("I")
     return I, g0, g1, g2, g3, sta

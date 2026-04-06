@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -12,7 +12,18 @@ def _():
     import marimo as mo
     import matplotlib.pyplot as plt
 
-    return Algebra, even_grades, gm, grade, involute, mo, np, odd_grades, plt, reverse
+    return (
+        Algebra,
+        even_grades,
+        gm,
+        grade,
+        involute,
+        mo,
+        np,
+        odd_grades,
+        plt,
+        reverse,
+    )
 
 
 @app.cell
@@ -109,7 +120,7 @@ def _(mo):
 def _(Algebra):
     alg = Algebra((1, 1, 1))
     e1, e2, e3 = alg.basis_vectors(lazy=True)
-    return alg, e1, e2, e3
+    return e1, e2, e3
 
 
 @app.cell(hide_code=True)
@@ -132,19 +143,32 @@ def _(mo):
 
 
 @app.cell
-def _(bivector_coeff, e1, e2, e3, even_grades, gm, grade, mo, odd_grades, scalar_coeff, trivector_coeff, vector_coeff):
+def _(
+    bivector_coeff,
+    e1,
+    e2,
+    e3,
+    even_grades,
+    gm,
+    grade,
+    mo,
+    odd_grades,
+    scalar_coeff,
+    trivector_coeff,
+    vector_coeff,
+):
     _x = (
         scalar_coeff.value
         + vector_coeff.value * e1
         + bivector_coeff.value * (e1 ^ e2)
         + trivector_coeff.value * (e1 ^ e2 ^ e3)
-    ).name("x")
-    _grade_0 = grade(_x, 0).name(latex=r"\langle x \rangle_0")
-    _grade_1 = grade(_x, 1).name(latex=r"\langle x \rangle_1")
-    _grade_2 = grade(_x, 2).name(latex=r"\langle x \rangle_2")
-    _grade_3 = grade(_x, 3).name(latex=r"\langle x \rangle_3")
-    _x_even = even_grades(_x).name(latex=r"x_{\mathrm{even}}")
-    _x_odd = odd_grades(_x).name(latex=r"x_{\mathrm{odd}}")
+    ).eval().name("x")
+    _grade_0 = grade(_x, 0)
+    _grade_1 = grade(_x, 1)
+    _grade_2 = grade(_x, 2)
+    _grade_3 = grade(_x, 3)
+    _x_even = even_grades(_x)
+    _x_odd = odd_grades(_x)
 
     _md = t"""
     {_x.display()} <br/>
@@ -172,7 +196,19 @@ def _(mo):
 
 
 @app.cell
-def _(bivector_coeff, e1, e2, e3, even_grades, gm, mo, odd_grades, scalar_coeff, trivector_coeff, vector_coeff):
+def _(
+    bivector_coeff,
+    e1,
+    e2,
+    e3,
+    even_grades,
+    gm,
+    mo,
+    odd_grades,
+    scalar_coeff,
+    trivector_coeff,
+    vector_coeff,
+):
     _x = (
         scalar_coeff.value
         + vector_coeff.value * e1
@@ -216,7 +252,20 @@ def _(mo):
 
 
 @app.cell
-def _(bivector_coeff, draw_grade_products, e1, e2, e3, gm, grade, mo, scalar_coeff, trivector_coeff, vector_coeff):
+def _(
+    bivector_coeff,
+    draw_grade_products,
+    e1,
+    e2,
+    e3,
+    gm,
+    grade,
+    mo,
+    np,
+    scalar_coeff,
+    trivector_coeff,
+    vector_coeff,
+):
     _I = (e1 * e2 * e3).name("I")
     _x = (
         scalar_coeff.value
@@ -293,15 +342,27 @@ def _(mo):
 
 
 @app.cell
-def _(bivector_coeff, e1, e2, e3, gm, involute, mo, reverse, scalar_coeff, trivector_coeff, vector_coeff):
+def _(
+    bivector_coeff,
+    e1,
+    e2,
+    e3,
+    gm,
+    involute,
+    mo,
+    reverse,
+    scalar_coeff,
+    trivector_coeff,
+    vector_coeff,
+):
     _x = (
         scalar_coeff.value
         + vector_coeff.value * e1
         + bivector_coeff.value * (e1 ^ e2)
         + trivector_coeff.value * (e1 ^ e2 ^ e3)
-    ).name("x")
-    _x_reverse = reverse(_x).name(latex=r"\widetilde{x}")
-    _x_involute = involute(_x).name(latex=r"\widehat{x}")
+    ).eval().name("x")
+    _x_reverse = reverse(_x)
+    _x_involute = involute(_x)
 
     _md = t"""
     {_x.display()} <br/>

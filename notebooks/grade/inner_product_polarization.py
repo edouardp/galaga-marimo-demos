@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -13,54 +13,6 @@ def _():
     import matplotlib.pyplot as plt
 
     return Algebra, gm, mo, np, plt
-
-
-@app.cell
-def _(np, plt):
-    def draw_polarization(u, v):
-        _u = np.array(u.eval().vector_part[:2], dtype=float)
-        _v = np.array(v.eval().vector_part[:2], dtype=float)
-        _sum = _u + _v
-
-        _fig, _ax = plt.subplots(figsize=(7.2, 5.4))
-
-        _ax.annotate(
-            "",
-            xy=_u,
-            xytext=(0, 0),
-            arrowprops=dict(arrowstyle="-|>", color="#d62828", lw=3, mutation_scale=22),
-        )
-        _ax.annotate(
-            "",
-            xy=_u + _v,
-            xytext=_u,
-            arrowprops=dict(arrowstyle="-|>", color="#2563eb", lw=3, mutation_scale=22),
-        )
-        _ax.annotate(
-            "",
-            xy=_sum,
-            xytext=(0, 0),
-            arrowprops=dict(arrowstyle="-|>", color="#7c3aed", lw=3, mutation_scale=22),
-        )
-
-        _ax.text(_u[0] * 0.5, _u[1] * 0.5 - 0.12, "u", color="#d62828", fontsize=13)
-        _mid_v = _u + 0.5 * _v
-        _ax.text(_mid_v[0] + 0.06, _mid_v[1] + 0.03, "v", color="#2563eb", fontsize=13)
-        _mid_sum = 0.5 * _sum
-        _ax.text(_mid_sum[0] - 0.28, _mid_sum[1] + 0.12, "u + v", color="#7c3aed", fontsize=13)
-
-        _ax.set_xlim(-0.5, 3.0)
-        _ax.set_ylim(-1.0, 1.5)
-        _ax.set_aspect("equal")
-        _ax.grid(True, alpha=0.25)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_title("Build the sum vector tip-to-tail")
-
-        plt.close(_fig)
-        return _fig
-
-    return (draw_polarization,)
 
 
 @app.cell(hide_code=True)
@@ -159,9 +111,60 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Appendum: Plotting Code
+    """)
     return
+
+
+@app.cell(hide_code=True)
+def _(np, plt):
+    def draw_polarization(u, v):
+        _u = np.array(u.eval().vector_part[:2], dtype=float)
+        _v = np.array(v.eval().vector_part[:2], dtype=float)
+        _sum = _u + _v
+
+        _fig, _ax = plt.subplots(figsize=(7.2, 5.4))
+
+        _ax.annotate(
+            "",
+            xy=_u,
+            xytext=(0, 0),
+            arrowprops=dict(arrowstyle="-|>", color="#d62828", lw=3, mutation_scale=22),
+        )
+        _ax.annotate(
+            "",
+            xy=_u + _v,
+            xytext=_u,
+            arrowprops=dict(arrowstyle="-|>", color="#2563eb", lw=3, mutation_scale=22),
+        )
+        _ax.annotate(
+            "",
+            xy=_sum,
+            xytext=(0, 0),
+            arrowprops=dict(arrowstyle="-|>", color="#7c3aed", lw=3, mutation_scale=22),
+        )
+
+        _ax.text(_u[0] * 0.5, _u[1] * 0.5 - 0.12, "u", color="#d62828", fontsize=13)
+        _mid_v = _u + 0.5 * _v
+        _ax.text(_mid_v[0] + 0.06, _mid_v[1] + 0.03, "v", color="#2563eb", fontsize=13)
+        _mid_sum = 0.5 * _sum
+        _ax.text(_mid_sum[0] - 0.28, _mid_sum[1] + 0.12, "u + v", color="#7c3aed", fontsize=13)
+
+        _ax.set_xlim(-0.5, 3.0)
+        _ax.set_ylim(-1.0, 1.5)
+        _ax.set_aspect("equal")
+        _ax.grid(True, alpha=0.25)
+        _ax.set_xlabel("e1")
+        _ax.set_ylabel("e2")
+        _ax.set_title("Build the sum vector tip-to-tail")
+
+        plt.close(_fig)
+        return _fig
+
+    return (draw_polarization,)
 
 
 if __name__ == "__main__":

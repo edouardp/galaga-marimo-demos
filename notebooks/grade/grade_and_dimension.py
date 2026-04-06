@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.21.1"
+__generated_with = "0.22.0"
 app = marimo.App(width="medium")
 
 
@@ -72,7 +72,7 @@ def _(mo):
 def _(Algebra):
     alg = Algebra((1, 1, 1))
     e1, e2, e3 = alg.basis_vectors(lazy=True)
-    return alg, e1, e2, e3
+    return e1, e2, e3
 
 
 @app.cell
@@ -105,7 +105,7 @@ def _(b_angle, c_tilt, draw_grade_blades, e1, e2, e3, gm, grade, mo, np):
     {_vector_example.display()} <br/>
     {_plane_blade.display()} <br/>
     {_volume_blade.display()} <br/>
-    {_geometric_product.display()} splits into {_grade_0_part.display()} and {_grade_2_part.display()}.
+    {_geometric_product.display()} splits into {_grade_0_part.display()} and {_grade_2_part.display()}
     """
 
     mo.vstack([b_angle, c_tilt, gm.md(_md), draw_grade_blades(_a, _b, _c)])
