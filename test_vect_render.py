@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.22.0"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -128,6 +128,35 @@ def _(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    A fourth vector render drops straight to the horizontal plane, marks that landing point, and then uses fainter in-plane guide lines to the horizontal axes.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    horizontal_view_yaw = mo.ui.slider(-30, 30, step=1, value=0, label="View yaw", show_value=True)
+    show_horizontal_tick_labels = mo.ui.checkbox(value=True, label="Show tick labels")
+    return horizontal_view_yaw, show_horizontal_tick_labels
+
+
+@app.cell
+def _(
+    azimuth,
+    draw_vector_horizontal_plane_drop,
+    elevation,
+    horizontal_view_yaw,
+    mo,
+    show_horizontal_tick_labels,
+    v,
+):
+    mo.vstack([azimuth, elevation, horizontal_view_yaw, show_horizontal_tick_labels, draw_vector_horizontal_plane_drop(v, horizontal_view_yaw.value, show_horizontal_tick_labels.value)])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     A third render treats the controlled direction as a plane normal instead. The plane itself is drawn as a disk patch, and its projected shadow is drawn onto each wall. If the plane is perpendicular to a wall, that shadow collapses to a line.
     """)
     return
@@ -137,12 +166,16 @@ def _(mo):
 def _(mo):
     plane_azimuth = mo.ui.slider(0, 360, step=1, value=35, label="Plane azimuth", show_value=True)
     plane_elevation = mo.ui.slider(-90, 90, step=1, value=25, label="Plane elevation", show_value=True)
+    plane_view_yaw = mo.ui.slider(-30, 30, step=1, value=0, label="Plane view yaw", show_value=True)
+    show_plane_tick_labels = mo.ui.checkbox(value=True, label="Show tick labels")
     show_plane_guides = mo.ui.checkbox(value=True, label="Show in-plane guide diameters")
     show_positive_normal = mo.ui.checkbox(value=True, label="Show positive normal")
     return (
         plane_azimuth,
         plane_elevation,
+        plane_view_yaw,
         show_plane_guides,
+        show_plane_tick_labels,
         show_positive_normal,
     )
 
@@ -158,7 +191,9 @@ def _(
     np,
     plane_azimuth,
     plane_elevation,
+    plane_view_yaw,
     show_plane_guides,
+    show_plane_tick_labels,
     show_positive_normal,
 ):
     _az = np.radians(plane_azimuth.value)
@@ -175,7 +210,7 @@ def _(
     Plane normal coordinates: $({_nx:.3f}, {_ny:.3f}, {_nz:.3f})$
     """
 
-    mo.vstack([plane_azimuth, plane_elevation, show_plane_guides, show_positive_normal, gm.md(_md), draw_plane_wall_shadows(n, show_plane_guides.value)])
+    mo.vstack([plane_azimuth, plane_elevation, plane_view_yaw, show_plane_tick_labels, show_plane_guides, show_positive_normal, gm.md(_md), draw_plane_wall_shadows(n, show_plane_guides.value, plane_view_yaw.value, show_plane_tick_labels.value)])
     return (n,)
 
 
@@ -194,10 +229,12 @@ def _(
     n,
     plane_azimuth,
     plane_elevation,
+    plane_view_yaw,
     show_plane_guides,
+    show_plane_tick_labels,
     show_positive_normal,
 ):
-    mo.vstack([plane_azimuth, plane_elevation, show_plane_guides, show_positive_normal, draw_plane_wall_shadows_tangent(n, plane_azimuth.value, plane_elevation.value, show_plane_guides.value, show_positive_normal.value)])
+    mo.vstack([plane_azimuth, plane_elevation, plane_view_yaw, show_plane_tick_labels, show_plane_guides, show_positive_normal, draw_plane_wall_shadows_tangent(n, plane_azimuth.value, plane_elevation.value, show_plane_guides.value, show_positive_normal.value, plane_view_yaw.value, show_plane_tick_labels.value)])
     return
 
 
@@ -227,6 +264,12 @@ def _(np, plt):
                 _axis._axinfo["grid"]["color"] = (0.2, 0.2, 0.2, 0.08)
                 _axis._axinfo["grid"]["linewidth"] = 0.6
                 _axis._axinfo["grid"]["linestyle"] = "-"
+            for _label in _ax.get_xticklabels():
+                _label.set_rotation(30)
+            for _label in _ax.get_yticklabels():
+                _label.set_rotation(-30)
+            for _label in _ax.get_zticklabels():
+                _label.set_rotation(0)
 
         _fig = plt.figure(figsize=(8.0, 7.0))
         _ax = _fig.add_subplot(111, projection="3d")
@@ -258,9 +301,9 @@ def _(np, plt):
         _ax.set_zlim(-_bound, _bound)
         _ax.set_box_aspect((1, 1, 1))
         _style_grid(_ax)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_zlabel("e3")
+        _ax.set_xlabel(r"$\mathbf{e_1}$", labelpad=10)
+        _ax.set_ylabel(r"$\mathbf{e_2}$", labelpad=10)
+        _ax.set_zlabel(r"$\mathbf{e_3}$")
         _ax.set_title("Vector with projections onto the three coordinate walls")
         plt.close(_fig)
         return _fig
@@ -283,6 +326,12 @@ def _(np, plt):
                 _axis._axinfo["grid"]["color"] = (0.2, 0.2, 0.2, 0.08)
                 _axis._axinfo["grid"]["linewidth"] = 0.6
                 _axis._axinfo["grid"]["linestyle"] = "-"
+            for _label in _ax.get_xticklabels():
+                _label.set_rotation(30)
+            for _label in _ax.get_yticklabels():
+                _label.set_rotation(-30)
+            for _label in _ax.get_zticklabels():
+                _label.set_rotation(0)
 
         _fig = plt.figure(figsize=(8.0, 7.0))
         _ax = _fig.add_subplot(111, projection="3d")
@@ -317,9 +366,9 @@ def _(np, plt):
         _ax.set_zlim(-_bound, _bound)
         _ax.set_box_aspect((1, 1, 1))
         _style_grid(_ax)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_zlabel("e3")
+        _ax.set_xlabel(r"$\mathbf{e_1}$", labelpad=10)
+        _ax.set_ylabel(r"$\mathbf{e_2}$", labelpad=10)
+        _ax.set_zlabel(r"$\mathbf{e_3}$")
         _ax.set_title("Vector with actual projected arrows on the three walls")
         plt.close(_fig)
         return _fig
@@ -342,6 +391,12 @@ def _(np, plt):
                 _axis._axinfo["grid"]["color"] = (0.2, 0.2, 0.2, 0.08)
                 _axis._axinfo["grid"]["linewidth"] = 0.6
                 _axis._axinfo["grid"]["linestyle"] = "-"
+            for _label in _ax.get_xticklabels():
+                _label.set_rotation(30)
+            for _label in _ax.get_yticklabels():
+                _label.set_rotation(-30)
+            for _label in _ax.get_zticklabels():
+                _label.set_rotation(0)
 
         _fig = plt.figure(figsize=(8.0, 7.0))
         _ax = _fig.add_subplot(111, projection="3d")
@@ -388,14 +443,86 @@ def _(np, plt):
         _ax.set_zlim(-_bound, _bound)
         _ax.set_box_aspect((1, 1, 1))
         _style_grid(_ax)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_zlabel("e3")
+        _ax.set_xlabel(r"$\mathbf{e_1}$", labelpad=10)
+        _ax.set_ylabel(r"$\mathbf{e_2}$", labelpad=10)
+        _ax.set_zlabel(r"$\mathbf{e_3}$")
         _ax.set_title("Vector with component lines dropped to the central axes")
         plt.close(_fig)
         return _fig
 
-    def draw_plane_wall_shadows(n, show_guides):
+    def draw_vector_horizontal_plane_drop(v, view_yaw_deg, show_tick_labels):
+        _vec = np.array(v.eval().vector_part[:3], dtype=float)
+        _x, _y, _z = _vec
+
+        _bound = 1.1
+        _purple = "#7c3aed"
+        _tick_color = "#333333"
+
+        def _style_grid(_ax):
+            _ax.grid(True)
+            _ticks = np.arange(-1.0, 1.01, 0.25)
+            _ax.set_xticks(_ticks)
+            _ax.set_yticks(_ticks)
+            _ax.set_zticks(_ticks)
+            for _axis in (_ax.xaxis, _ax.yaxis, _ax.zaxis):
+                _axis._axinfo["grid"]["color"] = (0.2, 0.2, 0.2, 0.08)
+                _axis._axinfo["grid"]["linewidth"] = 0.6
+                _axis._axinfo["grid"]["linestyle"] = "-"
+            for _label in _ax.get_xticklabels():
+                _label.set_rotation(30)
+            for _label in _ax.get_yticklabels():
+                _label.set_rotation(-30)
+            for _label in _ax.get_zticklabels():
+                _label.set_rotation(0)
+            if not show_tick_labels:
+                _ax.set_xticklabels([])
+                _ax.set_yticklabels([])
+                _ax.set_zticklabels([])
+
+        _fig = plt.figure(figsize=(8.0, 7.0))
+        _ax = _fig.add_subplot(111, projection="3d")
+
+        _s = np.linspace(-_bound, _bound, 2)
+        _u, _w = np.meshgrid(_s, _s)
+
+        _ax.plot_surface(_u, _w, -_bound * np.ones_like(_u), color="#dbeafe", alpha=0.08, shade=False)
+        _ax.plot_surface(_u, _bound * np.ones_like(_u), _w, color="#dcfce7", alpha=0.08, shade=False)
+        _ax.plot_surface(-_bound * np.ones_like(_u), _u, _w, color="#fee2e2", alpha=0.08, shade=False)
+
+        _ax.plot([-_bound, _bound], [0, 0], [0, 0], color=_tick_color, alpha=0.75, linewidth=1.3)
+        _ax.plot([0, 0], [-_bound, _bound], [0, 0], color=_tick_color, alpha=0.75, linewidth=1.3)
+        _ax.plot([0, 0], [0, 0], [-_bound, _bound], color=_tick_color, alpha=0.75, linewidth=1.3)
+
+        _tick_positions = np.arange(-1.0, 1.01, 0.25)
+        _tick_half = 0.03
+        for _t in _tick_positions:
+            if abs(_t) < 1e-9:
+                continue
+            _ax.plot([_t, _t], [-_tick_half, _tick_half], [0, 0], color=_tick_color, alpha=0.75, linewidth=1.0)
+            _ax.plot([-_tick_half, _tick_half], [_t, _t], [0, 0], color=_tick_color, alpha=0.75, linewidth=1.0)
+            _ax.plot([-_tick_half, _tick_half], [0, 0], [_t, _t], color=_tick_color, alpha=0.75, linewidth=1.0)
+
+        _ax.quiver(0, 0, 0, _x, _y, _z, color=_purple, linewidth=3.0, arrow_length_ratio=0.08)
+
+        _ax.plot([_x, _x], [_y, _y], [_z, 0], color=_purple, alpha=0.35, linewidth=2.1)
+        _ax.scatter([_x], [_y], [0], color=_purple, s=28, alpha=0.42)
+        _ax.plot([_x, _x], [_y, 0], [0, 0], color=_purple, alpha=0.16, linewidth=1.6, linestyle="--")
+        _ax.plot([_x, 0], [_y, _y], [0, 0], color=_purple, alpha=0.16, linewidth=1.6, linestyle="--")
+
+        _ax.set_xlim(-_bound, _bound)
+        _ax.set_ylim(-_bound, _bound)
+        _ax.set_zlim(-_bound, _bound)
+        _ax.set_box_aspect((1, 1, 1))
+        _ax.view_init(elev=22, azim=-58 + view_yaw_deg)
+        _style_grid(_ax)
+        _ax.set_xlabel(r"$\mathbf{e_1}$", labelpad=10)
+        _ax.set_ylabel(r"$\mathbf{e_2}$", labelpad=10)
+        _ax.set_zlabel(r"$\mathbf{e_3}$")
+        _ax.set_title("Vector with a drop to the horizontal plane")
+        plt.close(_fig)
+        return _fig
+
+    def draw_plane_wall_shadows(n, show_guides, view_yaw_deg, show_tick_labels):
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
         _normal = np.array(n.eval().vector_part[:3], dtype=float)
@@ -419,6 +546,16 @@ def _(np, plt):
                 _axis._axinfo["grid"]["color"] = (0.2, 0.2, 0.2, 0.08)
                 _axis._axinfo["grid"]["linewidth"] = 0.6
                 _axis._axinfo["grid"]["linestyle"] = "-"
+            for _label in _ax.get_xticklabels():
+                _label.set_rotation(30)
+            for _label in _ax.get_yticklabels():
+                _label.set_rotation(-30)
+            for _label in _ax.get_zticklabels():
+                _label.set_rotation(0)
+            if not show_tick_labels:
+                _ax.set_xticklabels([])
+                _ax.set_yticklabels([])
+                _ax.set_zticklabels([])
 
         def _disk_frame_from_normal(_normal_vec):
             _nx, _ny, _nz = _normal_vec
@@ -559,15 +696,16 @@ def _(np, plt):
         _ax.set_ylim(-_bound, _bound)
         _ax.set_zlim(-_bound, _bound)
         _ax.set_box_aspect((1, 1, 1))
+        _ax.view_init(elev=22, azim=-58 + view_yaw_deg)
         _style_grid(_ax)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_zlabel("e3")
+        _ax.set_xlabel(r"$\mathbf{e_1}$", labelpad=10)
+        _ax.set_ylabel(r"$\mathbf{e_2}$", labelpad=10)
+        _ax.set_zlabel(r"$\mathbf{e_3}$")
         _ax.set_title("Plane patch with projected shadows on the three walls")
         plt.close(_fig)
         return _fig
 
-    def draw_plane_wall_shadows_tangent(n, azimuth_deg, elevation_deg, show_guides, show_positive_normal):
+    def draw_plane_wall_shadows_tangent(n, azimuth_deg, elevation_deg, show_guides, show_positive_normal, view_yaw_deg, show_tick_labels):
         from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
         _normal = np.array(n.eval().vector_part[:3], dtype=float)
@@ -594,6 +732,16 @@ def _(np, plt):
                 _axis._axinfo["grid"]["color"] = (0.2, 0.2, 0.2, 0.08)
                 _axis._axinfo["grid"]["linewidth"] = 0.6
                 _axis._axinfo["grid"]["linestyle"] = "-"
+            for _label in _ax.get_xticklabels():
+                _label.set_rotation(30)
+            for _label in _ax.get_yticklabels():
+                _label.set_rotation(-30)
+            for _label in _ax.get_zticklabels():
+                _label.set_rotation(0)
+            if not show_tick_labels:
+                _ax.set_xticklabels([])
+                _ax.set_yticklabels([])
+                _ax.set_zticklabels([])
 
         def _polygon_points(_u_vec, _v_vec, _half_u=0.72, _half_v=0.48):
             return np.array(
@@ -712,10 +860,11 @@ def _(np, plt):
         _ax.set_ylim(-_bound, _bound)
         _ax.set_zlim(-_bound, _bound)
         _ax.set_box_aspect((1, 1, 1))
+        _ax.view_init(elev=22, azim=-58 + view_yaw_deg)
         _style_grid(_ax)
-        _ax.set_xlabel("e1")
-        _ax.set_ylabel("e2")
-        _ax.set_zlabel("e3")
+        _ax.set_xlabel(r"$\mathbf{e_1}$", labelpad=10)
+        _ax.set_ylabel(r"$\mathbf{e_2}$", labelpad=10)
+        _ax.set_zlabel(r"$\mathbf{e_3}$")
         _ax.set_title("Plane polygon from tangent-frame construction")
         plt.close(_fig)
         return _fig
@@ -724,6 +873,7 @@ def _(np, plt):
         draw_plane_wall_shadows,
         draw_plane_wall_shadows_tangent,
         draw_vector_axis_projections,
+        draw_vector_horizontal_plane_drop,
         draw_vector_wall_arrows,
         draw_vector_walls,
     )
